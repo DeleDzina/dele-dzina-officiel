@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "title": "Maillot Desprits 1",
+      "description": "Maillot signature, coupe athlétique, finitions premium.",
+      "image": "images/maillot-desprits-1.jpg",
+      "price": "",
+      "tag": "Drop 01",
+      "link": "product.html"
+    },
+    {
+      "title": "Maillot Blue Massiwa",
+      "description": "Bleu intense, texture respirante, identité forte.",
+      "image": "images/maillot-blue-massiwa.jpg",
+      "price": "",
+      "tag": "",
+      "link": "product.html"
+    },
+    {
+      "title": "Audi",
+      "description": "Pièce statement, silhouette structurée, vibe premium.",
+      "image": "images/audi.jpg",
+      "price": "",
+      "tag": "",
+      "link": "product.html"
+    },
+    {
+      "title": "Bas Jogging",
+      "description": "Jogging coupe droite, confort street, finition propre.",
+      "image": "images/bas-jogging.jpg",
+      "price": "",
+      "tag": "",
+      "link": "product.html"
+    }
+  ]
+}

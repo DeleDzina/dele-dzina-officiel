@@ -1,0 +1,51 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "site"
+    label: "Site"
+    files:
+      - name: "home"
+        label: "Accueil"
+        file: "data/site.json"
+        format: "json"
+        fields:
+          - { label: "Titre Hero", name: "hero_title", widget: "string" }
+          - { label: "Sous-titre Hero", name: "hero_subtitle", widget: "text" }
+          - label: "Hero Meta"
+            name: "hero_meta"
+            widget: "list"
+            field: { label: "Meta", name: "meta", widget: "string" }
+          - { label: "Texte À propos", name: "about_text", widget: "text" }
+          - { label: "Email Contact", name: "contact_email", widget: "string" }
+          - { label: "Villes", name: "contact_cities", widget: "string" }
+          - label: "Réseaux"
+            name: "socials"
+            widget: "list"
+            fields:
+              - { label: "Nom", name: "name", widget: "string" }
+              - { label: "Handle", name: "handle", widget: "string" }
+              - { label: "Lien", name: "url", widget: "string" }
+
+  - name: "collections"
+    label: "Collections"
+    files:
+      - name: "items"
+        label: "Produits"
+        file: "data/collections.json"
+        format: "json"
+        fields:
+          - label: "Produits"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "Nom", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Image", name: "image", widget: "image" }
+              - { label: "Prix", name: "price", widget: "string", required: false }
+              - { label: "Tag", name: "tag", widget: "string", required: false }
+              - { label: "Lien", name: "link", widget: "string", required: false }

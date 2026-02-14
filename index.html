@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Délé Dzina — Mode Urbaine Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient-glow"></div>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="logo" href="#hero">
+          <span class="logo-text">Délé Dzina</span>
+          <img class="logo-mark" src="Scroll%20dd.PNG" alt="Logo Délé Dzina" />
+        </a>
+        <div class="nav-links">
+          <a href="#hero">Accueil</a>
+          <a href="#collections">Collections</a>
+          <a href="#about">À propos</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
+      </nav>
+      <div class="mobile-menu" id="mobileMenu">
+        <a href="#hero">Accueil</a>
+        <a href="#collections">Collections</a>
+        <a href="#about">À propos</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <div class="hero-media" data-parallax>
+          <div class="hero-overlay"></div>
+          <div class="hero-grain"></div>
+          <div class="hero-logo-wrap" aria-hidden="true">
+            <img class="hero-logo" src="LLogo%20dd.png" alt="" />
+          </div>
+          <div class="hero-logo-scatter" aria-hidden="true">
+            <span class="scatter-logo s1"></span>
+            <span class="scatter-logo s2"></span>
+            <span class="scatter-logo s3"></span>
+            <span class="scatter-logo s4"></span>
+            <span class="scatter-logo s5"></span>
+            <span class="scatter-logo s6"></span>
+            <span class="scatter-logo s7"></span>
+            <span class="scatter-logo s8"></span>
+            <span class="scatter-logo s9"></span>
+            <span class="scatter-logo s10"></span>
+            <span class="scatter-logo s11"></span>
+            <span class="scatter-logo s12"></span>
+          </div>
+          
+        </div>
+        <div class="hero-content">
+          <h1 id="heroTitle">Délé Dzina</h1>
+          <p class="hero-subtitle" id="heroSubtitle">
+            Plus qu'une marque, un mode de vie Délé Dzina Haramu Holizima
+          </p>
+          <div class="hero-meta" id="heroMeta">
+            <span>Drop 01</span>
+            <span>Comores / Paris</span>
+            <span>Édition limitée</span>
+          </div>
+          <a class="cta" href="#collections">Découvrir</a>
+        </div>
+        <button class="hero-scroll" type="button" aria-label="Scroller vers la section Collections">
+          <img class="hero-scroll-logo" src="Scroll%20dd.PNG" alt="Logo Scroll" />
+        </button>
+      </section>
+
+      <section class="collections" id="collections">
+        <div class="section-header reveal">
+          <h2>Collections</h2>
+          <p>Series limitées et pièces fortes, pensées pour les nuits et la ville.</p>
+        </div>
+        <div class="grid" id="collectionsGrid"></div>
+      </section>
+
+      <section class="about" id="about">
+        <div class="about-content reveal">
+          <h2>Vision</h2>
+          <p id="aboutText">
+            Délé Dzina est partout. Plus qu’une marque, c’est un lifestyle un état d’esprit porté par celles 
+            et ceux qui avancent avec intention et confiance. Où que tu ailles, Délé Dzina te suit, 
+            parce que la marque vit à travers les personnes qui la portent.Tu es un DD. Pas simplement un soutien, 
+            mais une partie d’une culture façonnée par l’identité, l’ambition et la présence. 
+            Inspirée par l’esprit de Haramu Holizima force, résilience et fierté Délé Dzina représente 
+            celles et ceux qui refusent de se fondre dans la masse. Originaire des Comores, la marque transporte 
+            l’énergie de ses racines tout en parlant à une génération globale. La tradition rencontre une vision 
+            moderne pour créer quelque chose d’intemporel, d’audacieux et d’inimitable.
+          </p>
+          <div class="about-metrics">
+            <div>
+              <span>05</span>
+              <p>drops en 2026</p>
+            </div>
+            <div>
+              <span>12</span>
+              <p>collaborations en cours</p>
+            </div>
+            <div>
+              <span>100%</span>
+              <p>fabrication sélectionnée</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="product-highlight">
+        <div class="product-card reveal">
+          <div class="product-image"></div>
+          <div class="product-info">
+            <p class="eyebrow">Produit signature</p>
+            <h2>Veste Eclipse</h2>
+            <p>
+              Coupe volumineuse, zip métal noir, doublure satin. L’énergie d’une scène live,
+              la silhouette d’un manifeste.
+            </p>
+            <div class="price-row">
+              <span class="price">320€</span>
+              <a class="cta" href="product.html">Acheter</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact" id="contact">
+        <div class="section-header reveal">
+          <h2>Contact</h2>
+          <p>News, collaborations, points de vente — restez proches.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-card reveal">
+            <h3>Newsletter</h3>
+            <p>Recevez les drops et invitations exclusives.</p>
+            <form class="newsletter">
+              <input type="email" placeholder="Email" required />
+              <button type="submit">S’inscrire</button>
+            </form>
+          </div>
+          <div class="contact-card reveal">
+            <h3>Réseaux</h3>
+            <ul id="socialList">
+              <li><a href="#">Instagram</a><span>@deledzina_269</span></li>
+              <li><a href="#">TikTok</a><span>@deledzina_269</span></li>
+              <li><a href="#">YouTube</a><span>@deledzina_269</span></li>
+            </ul>
+          </div>
+          <div class="contact-card reveal">
+            <h3>Studio</h3>
+            <p id="contactCities">Paris / Comores / Sénégal / Maurice</p>
+            <p id="contactEmail">deledzina@gmail.com</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 Délé Dzina. Tous droits réservés.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
