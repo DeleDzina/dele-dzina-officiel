@@ -632,14 +632,58 @@ section {
   gap: 16px;
 }
 
-.contact-card ul li {
+.contact-card ul {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
-  color: var(--muted);
+}
+
+.contact-card ul li {
+  display: inline-flex;
+  align-items: center;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(214, 177, 93, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-link svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--accent);
 }
 
 .contact-card ul li a {
+  color: var(--text);
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(214, 177, 93, 0.25);
+}
+
+.city-toggle {
+  display: grid;
+  gap: 12px;
+}
+
+.city-toggle summary {
+  cursor: pointer;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+
+.city-toggle[open] summary {
   color: var(--text);
 }
 

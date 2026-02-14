@@ -107,12 +107,13 @@ const loadContent = async () => {
         siteData.socials.forEach((item) => {
           const li = document.createElement("li");
           const a = document.createElement("a");
-          a.textContent = item.name || "";
+          a.className = "social-link";
           a.href = item.url || "#";
-          const span = document.createElement("span");
-          span.textContent = item.handle || "";
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.setAttribute("aria-label", item.name || "Réseau");
+          a.innerHTML = `${getSocialIcon(item.name)}`;
           li.appendChild(a);
-          li.appendChild(span);
           socialList.appendChild(li);
         });
       }
@@ -177,6 +178,26 @@ const loadContent = async () => {
       addAddButton();
     }
   }
+};
+
+const getSocialIcon = (name = "") => {
+  const key = name.toLowerCase();
+  if (key.includes("instagram")) {
+    return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.5A4.5 4.5 0 1 1 7.5 13 4.5 4.5 0 0 1 12 8.5zm0 2A2.5 2.5 0 1 0 14.5 13 2.5 2.5 0 0 0 12 10.5zM18 6.5a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"/></svg>`;
+  }
+  if (key.includes("snap")) {
+    return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.7 0 4.5 2 4.5 4.8 0 .5 0 1 .1 1.3.2.6 1 .9 1.6 1.1 1 .4 1.3 1 .9 1.6-.4.6-1.3 1-2.1 1.2-.5.2-.6.4-.3 1 .3.7 1 1.5 1.8 2 .8.5.9 1.2.3 1.6-.6.4-1.6.5-2.6.2-.6-.2-1.1-.1-1.5.3-.5.5-1.4 1.2-2.7 1.2s-2.2-.7-2.7-1.2c-.4-.4-.9-.5-1.5-.3-1 .3-2 .2-2.6-.2-.6-.4-.5-1.1.3-1.6.8-.5 1.5-1.3 1.8-2 .3-.6.2-.8-.3-1-.8-.2-1.7-.6-2.1-1.2-.4-.6-.1-1.2.9-1.6.6-.2 1.4-.5 1.6-1.1.1-.3.1-.8.1-1.3C7.5 5 9.3 3 12 3z"/></svg>`;
+  }
+  if (key.includes("tiktok")) {
+    return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3c.3 2.2 2 3.9 4.2 4.2V9c-1.5-.1-2.8-.7-3.8-1.6V15a5 5 0 1 1-5-5c.3 0 .7 0 1 .1v2a3 3 0 1 0 2 2.8V3h1.6z"/></svg>`;
+  }
+  if (key.includes("youtube")) {
+    return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12s0-3.3-.4-4.8c-.2-.9-1-1.6-1.9-1.8C18.6 5 12 5 12 5s-6.6 0-8.7.4c-.9.2-1.7.9-1.9 1.8C1 8.7 1 12 1 12s0 3.3.4 4.8c.2.9 1 1.6 1.9 1.8 2.1.4 8.7.4 8.7.4s6.6 0 8.7-.4c.9-.2 1.7-.9 1.9-1.8.4-1.5.4-4.8.4-4.8zM10 15V9l5 3-5 3z"/></svg>`;
+  }
+  if (key.includes("audiomack")) {
+    return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v3H4V6zm0 4h16v3H4v-3zm0 4h10v3H4v-3z"/></svg>`;
+  }
+  return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>`;
 };
 
 const addAddButton = () => {
