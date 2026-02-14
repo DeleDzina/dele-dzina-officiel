@@ -8,6 +8,7 @@ const collectionsGrid = document.getElementById("collectionsGrid");
 const heroTitle = document.getElementById("heroTitle");
 const heroSubtitle = document.getElementById("heroSubtitle");
 const heroMeta = document.getElementById("heroMeta");
+const visionTitle = document.getElementById("visionTitle");
 const aboutText = document.getElementById("aboutText");
 const contactEmail = document.getElementById("contactEmail");
 const contactCities = document.getElementById("contactCities");
@@ -87,6 +88,7 @@ const loadContent = async () => {
       const siteData = await siteRes.json();
       if (heroTitle) heroTitle.textContent = siteData.hero_title || heroTitle.textContent;
       if (heroSubtitle) heroSubtitle.textContent = siteData.hero_subtitle || heroSubtitle.textContent;
+      if (visionTitle) visionTitle.textContent = siteData.vision_title || visionTitle.textContent;
       if (aboutText) aboutText.textContent = siteData.about_text || aboutText.textContent;
       if (contactEmail) contactEmail.textContent = siteData.contact_email || contactEmail.textContent;
       if (contactCities) contactCities.textContent = siteData.contact_cities || contactCities.textContent;

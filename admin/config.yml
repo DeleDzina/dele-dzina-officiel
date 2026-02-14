@@ -20,6 +20,7 @@ collections:
             name: "hero_meta"
             widget: "list"
             field: { label: "Meta", name: "meta", widget: "string" }
+          - { label: "Titre Vision", name: "vision_title", widget: "string" }
           - { label: "Texte À propos", name: "about_text", widget: "text" }
           - { label: "Email Contact", name: "contact_email", widget: "string" }
           - { label: "Villes", name: "contact_cities", widget: "string" }
