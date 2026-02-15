@@ -720,28 +720,6 @@ section {
   border-top: 1px solid var(--line);
 }
 
-.admin-fab {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 20;
-  background: rgba(0, 0, 0, 0.7);
-  color: var(--accent);
-  border: 1px solid rgba(214, 177, 93, 0.4);
-  border-radius: 999px;
-  padding: 10px 16px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 11px;
-  cursor: pointer;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.admin-fab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(214, 177, 93, 0.2);
-}
 
 .reveal {
   opacity: 0;

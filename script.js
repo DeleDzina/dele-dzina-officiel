@@ -14,7 +14,6 @@ const aboutText = document.getElementById("aboutText");
 const contactEmail = document.getElementById("contactEmail");
 const contactCities = document.getElementById("contactCities");
 const socialList = document.getElementById("socialList");
-const adminFab = document.querySelector(".admin-fab");
 
 if (window.netlifyIdentity) {
   window.netlifyIdentity.on("init", (user) => {
@@ -26,11 +25,24 @@ if (window.netlifyIdentity) {
   });
 }
 
-if (adminFab && window.netlifyIdentity) {
-  adminFab.addEventListener("click", () => {
+let dTapCount = 0;
+let dTapTimer;
+window.addEventListener("keydown", (event) => {
+  if (!window.netlifyIdentity) return;
+  if (event.key.toLowerCase() !== "d") return;
+  dTapCount += 1;
+  if (dTapCount === 2) {
     window.netlifyIdentity.open();
-  });
-}
+    dTapCount = 0;
+    clearTimeout(dTapTimer);
+    return;
+  }
+  clearTimeout(dTapTimer);
+  dTapTimer = setTimeout(() => {
+    dTapCount = 0;
+  }, 500);
+});
+
 
 const revealOnScroll = () => {
   const trigger = window.innerHeight * 0.85;
