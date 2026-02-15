@@ -1,3 +1,69 @@
 {
-  "events": []
+  "events": [
+    {
+      "id": "0600a05b-ad12-43a2-b187-38865aeae50e",
+      "eventName": "remove_from_cart",
+      "props": {
+        "productId": "ensemble-metal",
+        "productTitle": "Ensemble Metal",
+        "value": 40
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:01:47.015Z"
+    },
+    {
+      "id": "ca66360f-dfd1-40a2-b720-f2c3d48429a5",
+      "eventName": "add_to_cart",
+      "props": {
+        "productId": "ensemble-metal",
+        "productTitle": "Ensemble Metal",
+        "value": 40,
+        "quantity": 1
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:01:31.773Z"
+    },
+    {
+      "id": "985d16aa-8944-48bf-9a9b-764b34f44e39",
+      "eventName": "add_to_cart",
+      "props": {
+        "productId": "ensemble-metal",
+        "productTitle": "Ensemble Metal",
+        "value": 40,
+        "quantity": 1
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:01:29.966Z"
+    },
+    {
+      "id": "355d7e9d-ef63-4403-97ab-2c1b02fc0ea6",
+      "eventName": "page_view",
+      "props": {
+        "page": "/product.html",
+        "pageType": "product"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:01:14.850Z"
+    },
+    {
+      "id": "5ed1ccc3-1607-48e5-814b-ae143cbba6c4",
+      "eventName": "page_view",
+      "props": {
+        "page": "/",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:00:58.800Z"
+    }
+  ]
 }
