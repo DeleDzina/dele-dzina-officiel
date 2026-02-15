@@ -448,8 +448,8 @@ section {
   width: min(70vw, 720px);
   height: min(70vw, 720px);
   transform: translate(-50%, -50%);
-  background: url("logo%20dore%CC%81.png") center/contain no-repeat;
-  opacity: 0.18;
+  background: url("images/logo-dore.png") center/contain no-repeat;
+  opacity: 0.28;
   filter: drop-shadow(0 30px 80px rgba(214, 177, 93, 0.4));
   mix-blend-mode: screen;
   animation: collectionSpin 6s linear infinite;
