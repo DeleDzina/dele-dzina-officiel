@@ -14,6 +14,7 @@ const aboutText = document.getElementById("aboutText");
 const contactEmail = document.getElementById("contactEmail");
 const contactCities = document.getElementById("contactCities");
 const socialList = document.getElementById("socialList");
+const adminFab = document.querySelector(".admin-fab");
 
 if (window.netlifyIdentity) {
   window.netlifyIdentity.on("init", (user) => {
@@ -22,6 +23,12 @@ if (window.netlifyIdentity) {
         document.location.href = "/admin/";
       });
     }
+  });
+}
+
+if (adminFab && window.netlifyIdentity) {
+  adminFab.addEventListener("click", () => {
+    window.netlifyIdentity.open();
   });
 }
 
