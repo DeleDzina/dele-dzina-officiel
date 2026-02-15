@@ -480,6 +480,11 @@ app.use(
     etag: true,
     lastModified: true,
     setHeaders: (res, filePath) => {
+      if (!IS_PRODUCTION) {
+        res.setHeader("Cache-Control", "no-cache");
+        return;
+      }
+
       if (filePath.endsWith(".html")) {
         res.setHeader("Cache-Control", "no-cache");
         return;

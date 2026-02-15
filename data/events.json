@@ -1,6 +1,18 @@
 {
   "events": [
     {
+      "id": "d6f38b01-4f27-4637-a404-424dd50faaee",
+      "eventName": "page_view",
+      "props": {
+        "page": "/index.html",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:11:46.962Z"
+    },
+    {
       "id": "71c1c574-75c6-42ae-b645-c8bcac9c66d9",
       "eventName": "page_view",
       "props": {

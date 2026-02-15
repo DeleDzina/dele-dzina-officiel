@@ -10,8 +10,7 @@ const state = {
   analyticsReady: false,
   analyticsMeasurementId: "",
   cartReturnFocusEl: null,
-  adminShortcutCount: 0,
-  adminShortcutTimer: null,
+  adminLastDAt: 0,
 };
 
 const elements = {
@@ -131,23 +130,16 @@ function setupStaticUI() {
     if (isEditableTarget(event.target)) return;
 
     const key = String(event.key || "").toLowerCase();
-    if (key !== "d") {
-      resetAdminShortcut();
-      return;
-    }
+    if (key !== "d") return;
 
-    state.adminShortcutCount += 1;
-    clearTimeout(state.adminShortcutTimer);
-
-    if (state.adminShortcutCount >= 2) {
-      resetAdminShortcut();
+    const now = Date.now();
+    if (now - state.adminLastDAt <= ADMIN_SHORTCUT_WINDOW_MS) {
+      state.adminLastDAt = 0;
       window.location.href = ADMIN_PORTAL_PATH;
       return;
     }
 
-    state.adminShortcutTimer = setTimeout(() => {
-      resetAdminShortcut();
-    }, ADMIN_SHORTCUT_WINDOW_MS);
+    state.adminLastDAt = now;
   });
 }
 
@@ -989,12 +981,6 @@ function getSocialIcon(name = "") {
     return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.7 0 4.5 2 4.5 4.8 0 .5 0 1 .1 1.3.2.6 1 .9 1.6 1.1 1 .4 1.3 1 .9 1.6-.4.6-1.3 1-2.1 1.2-.5.2-.6.4-.3 1 .3.7 1 1.5 1.8 2 .8.5.9 1.2.3 1.6-.6.4-1.6.5-2.6.2-.6-.2-1.1-.1-1.5.3-.5.5-1.4 1.2-2.7 1.2s-2.2-.7-2.7-1.2c-.4-.4-.9-.5-1.5-.3-1 .3-2 .2-2.6-.2-.6-.4-.5-1.1.3-1.6.8-.5 1.5-1.3 1.8-2 .3-.6.2-.8-.3-1-.8-.2-1.7-.6-2.1-1.2-.4-.6-.1-1.2.9-1.6.6-.2 1.4-.5 1.6-1.1.1-.3.1-.8.1-1.3C7.5 5 9.3 3 12 3z"/></svg>`;
   }
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>`;
-}
-
-function resetAdminShortcut() {
-  state.adminShortcutCount = 0;
-  clearTimeout(state.adminShortcutTimer);
-  state.adminShortcutTimer = null;
 }
 
 function isEditableTarget(target) {
