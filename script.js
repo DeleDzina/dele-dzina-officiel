@@ -15,6 +15,16 @@ const contactEmail = document.getElementById("contactEmail");
 const contactCities = document.getElementById("contactCities");
 const socialList = document.getElementById("socialList");
 
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", (user) => {
+    if (!user) {
+      window.netlifyIdentity.on("login", () => {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+
 const revealOnScroll = () => {
   const trigger = window.innerHeight * 0.85;
   document.querySelectorAll(".reveal").forEach((el) => {
