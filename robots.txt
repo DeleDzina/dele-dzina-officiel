@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+Disallow: /dd-portal-269.html
 
 Sitemap: https://deledzina.com/sitemap.xml

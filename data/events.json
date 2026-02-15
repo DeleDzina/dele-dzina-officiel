@@ -1,6 +1,78 @@
 {
   "events": [
     {
+      "id": "71c1c574-75c6-42ae-b645-c8bcac9c66d9",
+      "eventName": "page_view",
+      "props": {
+        "page": "/index.html",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:10:55.647Z"
+    },
+    {
+      "id": "4126a59e-f565-40a8-af03-1fe913e8d3ab",
+      "eventName": "page_view",
+      "props": {
+        "page": "/index.html",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:08:38.357Z"
+    },
+    {
+      "id": "8d1b05cb-7e51-4b39-bfde-8c6e4189bc8a",
+      "eventName": "page_view",
+      "props": {
+        "page": "/product.html",
+        "pageType": "product"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:04:36.522Z"
+    },
+    {
+      "id": "ab7b7270-764a-45f3-8a1d-14a38391f2b6",
+      "eventName": "page_view",
+      "props": {
+        "page": "/index.html",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:04:12.592Z"
+    },
+    {
+      "id": "25cb18fb-faa3-457c-9d57-3394cb6bdb2b",
+      "eventName": "page_view",
+      "props": {
+        "page": "/index.html",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:03:57.263Z"
+    },
+    {
+      "id": "4a90c9a5-1737-464e-bedd-beffba46d475",
+      "eventName": "page_view",
+      "props": {
+        "page": "/",
+        "pageType": "home"
+      },
+      "path": "/api/track",
+      "referrer": "",
+      "userAgentHash": "639bb61001bfc0a6",
+      "createdAt": "2026-02-15T16:03:25.810Z"
+    },
+    {
       "id": "0600a05b-ad12-43a2-b187-38865aeae50e",
       "eventName": "remove_from_cart",
       "props": {

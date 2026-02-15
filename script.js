@@ -1,4 +1,6 @@
 const CART_STORAGE_KEY = "dd_cart_v1";
+const ADMIN_PORTAL_PATH = "/dd-portal-269.html";
+const ADMIN_SHORTCUT_WINDOW_MS = 700;
 
 const state = {
   site: {},
@@ -8,6 +10,8 @@ const state = {
   analyticsReady: false,
   analyticsMeasurementId: "",
   cartReturnFocusEl: null,
+  adminShortcutCount: 0,
+  adminShortcutTimer: null,
 };
 
 const elements = {
@@ -42,7 +46,6 @@ const elements = {
   aboutText: document.getElementById("aboutText"),
   socialList: document.getElementById("socialList"),
   contactEmail: document.getElementById("contactEmail"),
-  contactCities: document.getElementById("contactCities"),
   currentYear: document.getElementById("currentYear"),
   productImage: document.getElementById("productImage"),
   productTitle: document.getElementById("productTitle"),
@@ -121,6 +124,31 @@ function setupStaticUI() {
       elements.menuToggle?.setAttribute("aria-expanded", "false");
     }
   });
+
+  // Hidden admin shortcut: press D twice quickly from anywhere on the page.
+  window.addEventListener("keydown", (event) => {
+    if (event.repeat) return;
+    if (isEditableTarget(event.target)) return;
+
+    const key = String(event.key || "").toLowerCase();
+    if (key !== "d") {
+      resetAdminShortcut();
+      return;
+    }
+
+    state.adminShortcutCount += 1;
+    clearTimeout(state.adminShortcutTimer);
+
+    if (state.adminShortcutCount >= 2) {
+      resetAdminShortcut();
+      window.location.href = ADMIN_PORTAL_PATH;
+      return;
+    }
+
+    state.adminShortcutTimer = setTimeout(() => {
+      resetAdminShortcut();
+    }, ADMIN_SHORTCUT_WINDOW_MS);
+  });
 }
 
 function setupScrollEffects() {
@@ -189,7 +217,6 @@ async function loadSiteContent() {
   if (elements.visionTitle && siteData.vision_title) elements.visionTitle.textContent = siteData.vision_title;
   if (elements.aboutText && siteData.about_text) elements.aboutText.textContent = siteData.about_text;
   if (elements.contactEmail && siteData.contact_email) elements.contactEmail.textContent = siteData.contact_email;
-  if (elements.contactCities && siteData.contact_cities) elements.contactCities.textContent = siteData.contact_cities;
 
   if (elements.heroMeta && Array.isArray(siteData.hero_meta)) {
     elements.heroMeta.innerHTML = "";
@@ -962,4 +989,16 @@ function getSocialIcon(name = "") {
     return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.7 0 4.5 2 4.5 4.8 0 .5 0 1 .1 1.3.2.6 1 .9 1.6 1.1 1 .4 1.3 1 .9 1.6-.4.6-1.3 1-2.1 1.2-.5.2-.6.4-.3 1 .3.7 1 1.5 1.8 2 .8.5.9 1.2.3 1.6-.6.4-1.6.5-2.6.2-.6-.2-1.1-.1-1.5.3-.5.5-1.4 1.2-2.7 1.2s-2.2-.7-2.7-1.2c-.4-.4-.9-.5-1.5-.3-1 .3-2 .2-2.6-.2-.6-.4-.5-1.1.3-1.6.8-.5 1.5-1.3 1.8-2 .3-.6.2-.8-.3-1-.8-.2-1.7-.6-2.1-1.2-.4-.6-.1-1.2.9-1.6.6-.2 1.4-.5 1.6-1.1.1-.3.1-.8.1-1.3C7.5 5 9.3 3 12 3z"/></svg>`;
   }
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>`;
+}
+
+function resetAdminShortcut() {
+  state.adminShortcutCount = 0;
+  clearTimeout(state.adminShortcutTimer);
+  state.adminShortcutTimer = null;
+}
+
+function isEditableTarget(target) {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  return ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
 }
