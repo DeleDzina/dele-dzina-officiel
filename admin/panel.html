@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Délé Dzina Admin Panel</title>
+    <link rel="stylesheet" href="panel.css" />
+  </head>
+  <body>
+    <header class="admin-header">
+      <div>
+        <p class="kicker">Délé Dzina</p>
+        <h1>Admin Panel</h1>
+      </div>
+      <div class="admin-links">
+        <a href="/">Voir le site</a>
+        <a href="/admin/">Ouvrir le CMS</a>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section class="panel-card">
+        <h2>Connexion API admin</h2>
+        <p>Entrez la valeur de <code>ADMIN_API_TOKEN</code> du fichier <code>.env</code>.</p>
+        <div class="row">
+          <input id="adminToken" type="password" placeholder="ADMIN_API_TOKEN" />
+          <button id="connectBtn" type="button">Connecter</button>
+          <button id="logoutBtn" type="button" class="ghost">Effacer</button>
+        </div>
+        <p id="authStatus" class="status"></p>
+      </section>
+
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Produits</h2>
+          <div class="row compact">
+            <button id="addProductBtn" type="button" class="ghost">Ajouter</button>
+            <button id="saveProductsBtn" type="button">Enregistrer</button>
+          </div>
+        </div>
+        <div id="productsEditor" class="products-editor"></div>
+      </section>
+
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Commandes</h2>
+          <button id="refreshOrdersBtn" type="button" class="ghost">Rafraîchir</button>
+        </div>
+        <div class="orders-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="panelToast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="panel.js"></script>
+  </body>
+</html>

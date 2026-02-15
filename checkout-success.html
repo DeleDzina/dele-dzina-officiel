@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Commande confirmée - Délé Dzina</title>
+    <meta name="description" content="Commande confirmée sur la boutique officielle Délé Dzina." />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="theme-color" content="#0b0b0b" />
+    <link rel="canonical" href="/checkout-success.html" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="status-page">
+      <section class="status-card reveal visible">
+        <p class="eyebrow">Paiement validé</p>
+        <h1>Commande confirmée</h1>
+        <p>Merci pour ta commande. Le paiement par carte a été accepté.</p>
+        <p id="orderRef" class="small-note"></p>
+        <p id="orderSummary" class="small-note"></p>
+        <div class="product-actions">
+          <a class="cta" href="index.html#collections">Retour boutique</a>
+          <a class="ghost ghost-link" href="mailto:deledzina@gmail.com">Contacter le support</a>
+        </div>
+      </section>
+    </main>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order_id");
+      const sessionId = params.get("session_id");
+      const refEl = document.getElementById("orderRef");
+      const summaryEl = document.getElementById("orderSummary");
+
+      localStorage.removeItem("dd_cart_v1");
+
+      if (refEl && (orderId || sessionId)) {
+        refEl.textContent = `Référence: ${orderId || "-"} ${sessionId ? "| Session: " + sessionId : ""}`;
+      }
+
+      async function loadSummaryAndTrack() {
+        let summary = null;
+
+        if (orderId) {
+          try {
+            const response = await fetch(`/api/order/${encodeURIComponent(orderId)}/summary`);
+            if (response.ok) {
+              summary = await response.json();
+            }
+          } catch (_error) {
+            // Optional summary only.
+          }
+        }
+
+        if (summary && summaryEl) {
+          const total = Number(summary.subtotal || 0).toLocaleString("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+          });
+          summaryEl.textContent = `Montant: ${total} | Articles: ${summary.itemCount || 0}`;
+        }
+
+        const payload = {
+          eventName: "purchase",
+          props: {
+            orderId: orderId || "",
+            sessionId: sessionId || "",
+            value: summary ? Number(summary.subtotal || 0) : 0,
+            currency: "EUR",
+          },
+        };
+
+        fetch("/api/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+
+        try {
+          const siteRes = await fetch("/api/site");
+          if (!siteRes.ok) return;
+          const site = await siteRes.json();
+          const measurementId = String(site.ga_measurement_id || "").trim();
+          if (!measurementId) return;
+
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function gtag() {
+            window.dataLayer.push(arguments);
+          };
+          window.gtag("js", new Date());
+          window.gtag("config", measurementId, { anonymize_ip: true });
+          window.gtag("event", "purchase", payload.props);
+
+          const tag = document.createElement("script");
+          tag.async = true;
+          tag.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+          document.head.appendChild(tag);
+        } catch (_error) {
+          // Analytics is optional.
+        }
+      }
+
+      loadSummaryAndTrack();
+    </script>
+  </body>
+</html>

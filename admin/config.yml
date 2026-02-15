@@ -22,6 +22,8 @@ collections:
             field: { label: "Meta", name: "meta", widget: "string" }
           - { label: "Titre Vision", name: "vision_title", widget: "string" }
           - { label: "Texte À propos", name: "about_text", widget: "text" }
+          - { label: "URL du site (SEO)", name: "site_url", widget: "string", required: false }
+          - { label: "GA4 Measurement ID", name: "ga_measurement_id", widget: "string", required: false }
           - { label: "Email Contact", name: "contact_email", widget: "string" }
           - { label: "Villes", name: "contact_cities", widget: "string" }
           - label: "Réseaux"
@@ -33,10 +35,10 @@ collections:
               - { label: "Lien", name: "url", widget: "string" }
 
   - name: "collections"
-    label: "Collections"
+    label: "Produits"
     files:
       - name: "items"
-        label: "Produits"
+        label: "Catalogue"
         file: "data/collections.json"
         format: "json"
         fields:
@@ -44,9 +46,10 @@ collections:
             name: "items"
             widget: "list"
             fields:
+              - { label: "ID", name: "id", widget: "string" }
               - { label: "Nom", name: "title", widget: "string" }
               - { label: "Description", name: "description", widget: "text" }
-              - { label: "Image", name: "image", widget: "image" }
-              - { label: "Prix", name: "price", widget: "string", required: false }
+              - { label: "Image", name: "image", widget: "image", required: false }
+              - { label: "Prix (EUR)", name: "price", widget: "number", value_type: "float", min: 0, step: 0.01 }
               - { label: "Tag", name: "tag", widget: "string", required: false }
-              - { label: "Lien", name: "link", widget: "string", required: false }
+              - { label: "Actif", name: "active", widget: "boolean", default: true }

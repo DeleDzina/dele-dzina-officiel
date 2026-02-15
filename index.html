@@ -3,7 +3,31 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Délé Dzina — Mode Urbaine Premium</title>
+    <title>Délé Dzina - Boutique Officielle</title>
+    <meta
+      name="description"
+      content="Site officiel Délé Dzina: collections premium, paiement sécurisé par carte et livraison internationale."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#0b0b0b" />
+    <meta property="og:site_name" content="Délé Dzina" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Délé Dzina - Boutique Officielle" />
+    <meta
+      property="og:description"
+      content="Collections premium Délé Dzina avec paiement carte sécurisé et livraison internationale."
+    />
+    <meta property="og:image" content="/logo-dd.png" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Délé Dzina - Boutique Officielle" />
+    <meta
+      property="twitter:description"
+      content="Collections premium Délé Dzina avec paiement carte sécurisé et livraison internationale."
+    />
+    <meta property="twitter:image" content="/logo-dd.png" />
+    <link rel="canonical" href="/" />
+    <link rel="icon" href="/logo-dd.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,31 +36,51 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-page="home">
+    <a class="skip-link" href="#mainContent">Aller au contenu</a>
     <div class="ambient-glow"></div>
+
     <header class="site-header">
       <nav class="nav">
-        <a class="logo" href="#hero">
+        <a class="logo" href="#hero" aria-label="Accueil Délé Dzina">
           <span class="logo-text">Délé Dzina</span>
           <img class="logo-mark" src="Scroll%20dd.PNG" alt="Logo Délé Dzina" />
         </a>
+
         <div class="nav-links">
           <a href="#hero">Accueil</a>
-          <a href="#collections">Collections</a>
+          <a href="#collections">Boutique</a>
           <a href="#about">À propos</a>
           <a href="#contact">Contact</a>
+          <a href="/admin/panel.html">Admin</a>
         </div>
-        <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
+
+        <div class="nav-actions">
+          <button
+            class="cart-button"
+            id="openCartBtn"
+            type="button"
+            aria-label="Ouvrir le panier"
+            aria-controls="cartDrawer"
+            aria-expanded="false"
+          >
+            Panier
+            <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+          </button>
+          <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
+        </div>
       </nav>
+
       <div class="mobile-menu" id="mobileMenu">
         <a href="#hero">Accueil</a>
-        <a href="#collections">Collections</a>
+        <a href="#collections">Boutique</a>
         <a href="#about">À propos</a>
         <a href="#contact">Contact</a>
+        <a href="/admin/panel.html">Admin</a>
       </div>
     </header>
 
-    <main>
+    <main id="mainContent">
       <section class="hero" id="hero">
         <div class="hero-media" data-parallax>
           <div class="hero-overlay"></div>
@@ -53,35 +97,64 @@
             <span class="scatter-logo s6"></span>
             <span class="scatter-logo s7"></span>
             <span class="scatter-logo s8"></span>
-            <span class="scatter-logo s9"></span>
-            <span class="scatter-logo s10"></span>
-            <span class="scatter-logo s11"></span>
-            <span class="scatter-logo s12"></span>
           </div>
-          
         </div>
+
         <div class="hero-content">
           <h1 id="heroTitle">Délé Dzina</h1>
           <p class="hero-subtitle" id="heroSubtitle">
             Plus qu'une marque, un mode de vie. HARAMU HOLIZIMA!
           </p>
           <div class="hero-meta" id="heroMeta">
-            <span>Drop 01</span>
+            <span>Drop officiel</span>
             <span>Comores / Paris</span>
-            <span>Édition limitée</span>
+            <span>Paiement sécurisé</span>
           </div>
-          <a class="cta" href="#collections">Découvrir</a>
+          <a class="cta" href="#collections">Découvrir les produits</a>
         </div>
-        <button class="hero-scroll" type="button" aria-label="Scroller vers la section Collections">
+
+        <button class="hero-scroll" id="heroScroll" type="button" aria-label="Scroller vers la boutique">
           <img class="hero-scroll-logo" src="Scroll%20dd.PNG" alt="Logo Scroll" />
         </button>
+      </section>
+
+      <section class="trust-strip reveal">
+        <article>
+          <h3>Paiement Carte</h3>
+          <p>Checkout Stripe sécurisé (Visa, Mastercard, Apple Pay selon appareil).</p>
+        </article>
+        <article>
+          <h3>Livraison</h3>
+          <p>France, Comores et international avec suivi de commande.</p>
+        </article>
+        <article>
+          <h3>Support</h3>
+          <p>Réponse rapide par email pour commandes, SAV et collaborations.</p>
+        </article>
       </section>
 
       <section class="collections" id="collections">
         <div class="section-header reveal">
           <h2>Collections</h2>
-          <p>Series limitées et pièces fortes, pensées pour les nuits et la ville.</p>
+          <p>Catalogue officiel de la marque. Sélectionne, ajoute au panier, paie par carte.</p>
         </div>
+
+        <div class="shop-toolbar reveal">
+          <label class="field">
+            <span>Recherche</span>
+            <input id="productSearch" type="search" placeholder="Ex: pull, maillot, jogging" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>Trier</span>
+            <select id="productSort">
+              <option value="featured">Mis en avant</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="name-asc">Nom A-Z</option>
+            </select>
+          </label>
+        </div>
+
         <div class="grid" id="collectionsGrid"></div>
       </section>
 
@@ -89,42 +162,21 @@
         <div class="about-content reveal">
           <h2 id="visionTitle">Vision DD</h2>
           <p id="aboutText">
-            Délé Dzina incarne les arts de la rue en fusionant mode, musique, sport et culture urbaine pour créer un style authentique et fédérateur. 
-En mêlant designs audacieux, coupes modernes et inspirations urbaines, nous voulons sublimer l'expression de chacun.
-Originaire des Comores, la marque traverse les frontières en transportant l’énergie de l’océan indien tout en parlant à une génération globale.
-Nous faisons de la qualité l'une de nos principales préoccupations pour garantir confort et durabilité.
-
+            Délé Dzina incarne les arts de la rue en fusionnant mode, musique, sport et culture
+            urbaine pour créer un style authentique et fédérateur.
           </p>
           <div class="about-metrics">
             <div>
-              <span>05</span>
-              <p>drops en 2026</p>
-            </div>
-            <div>
-              <span>12</span>
-              <p>collaborations en cours</p>
+              <span>08+</span>
+              <p>produits actifs</p>
             </div>
             <div>
               <span>100%</span>
-              <p>fabrication sélectionnée</p>
+              <p>paiement carte sécurisé</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="product-highlight">
-        <div class="product-card reveal">
-          <div class="product-image"></div>
-          <div class="product-info">
-            <p class="eyebrow">Produit signature</p>
-            <h2>Veste Eclipse</h2>
-            <p>
-              Coupe volumineuse, zip métal noir, doublure satin. L’énergie d’une scène live,
-              la silhouette d’un manifeste.
-            </p>
-            <div class="price-row">
-              <span class="price">320€</span>
-              <a class="cta" href="product.html">Acheter</a>
+            <div>
+              <span>24/7</span>
+              <p>boutique en ligne</p>
             </div>
           </div>
         </div>
@@ -133,17 +185,20 @@ Nous faisons de la qualité l'une de nos principales préoccupations pour garant
       <section class="contact" id="contact">
         <div class="section-header reveal">
           <h2>Contact</h2>
-          <p>News, collaborations — restez proches.</p>
+          <p>News, collaborations et support commande.</p>
         </div>
+
         <div class="contact-grid">
           <div class="contact-card reveal">
             <h3>Newsletter</h3>
-            <p>Recevez les drops et invitations exclusives.</p>
-            <form class="newsletter">
-              <input type="email" placeholder="Email" required />
+            <p>Recevez les nouveaux drops et offres privées.</p>
+            <form class="newsletter" id="newsletterForm">
+              <input id="newsletterEmail" type="email" placeholder="Email" required />
               <button type="submit">S’inscrire</button>
             </form>
+            <p class="inline-message" id="newsletterMessage"></p>
           </div>
+
           <div class="contact-card reveal">
             <h3>Réseaux</h3>
             <ul id="socialList">
@@ -152,19 +207,71 @@ Nous faisons de la qualité l'une de nos principales préoccupations pour garant
               <li><a href="#">YouTube</a><span>@deledzina_269</span></li>
             </ul>
           </div>
+
           <div class="contact-card reveal">
             <h3>Dassi</h3>
             <p id="contactEmail">deledzina@gmail.com</p>
+            <p id="contactCities">Paris / Moroni / Dakar / Maurice</p>
+            <a class="ghost ghost-link" href="mailto:deledzina@gmail.com">Envoyer un email</a>
           </div>
         </div>
       </section>
     </main>
 
+    <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cartHeading" tabindex="-1">
+      <div class="cart-header">
+        <h2 id="cartHeading">Panier</h2>
+        <button id="closeCartBtn" class="icon-btn" type="button" aria-label="Fermer le panier">X</button>
+      </div>
+      <div class="cart-body" id="cartItems"></div>
+      <div class="cart-footer">
+        <label class="field">
+          <span>Email client (optionnel)</span>
+          <input id="checkoutEmail" type="email" placeholder="client@email.com" />
+        </label>
+        <div class="cart-total-row">
+          <span>Total</span>
+          <strong id="cartTotal">0,00 EUR</strong>
+        </div>
+        <button class="cta full" id="checkoutBtn" type="button">Payer par carte</button>
+        <p class="small-note">Paiement traité sur Stripe Checkout.</p>
+      </div>
+    </aside>
+
+    <div class="cart-backdrop" id="cartBackdrop"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
     <footer class="footer">
-      <p>© 2026 Délé Dzina. Tous droits réservés.</p>
+      <p>© <span id="currentYear"></span> Délé Dzina. Tous droits réservés.</p>
+      <div class="footer-links">
+        <a href="privacy.html">Confidentialité</a>
+        <a href="terms.html">Conditions</a>
+        <a href="/admin/">CMS</a>
+      </div>
     </footer>
 
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Délé Dzina",
+        "url": "https://deledzina.com",
+        "logo": "https://deledzina.com/logo-dd.png",
+        "sameAs": [
+          "https://www.instagram.com/deledzina_269/",
+          "https://www.tiktok.com/@deledzina_269"
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Délé Dzina",
+        "url": "https://deledzina.com"
+      }
+    </script>
     <script src="script.js"></script>
   </body>
 </html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paiement annulé - Délé Dzina</title>
+    <meta name="description" content="Paiement annulé sur la boutique Délé Dzina." />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="theme-color" content="#0b0b0b" />
+    <link rel="canonical" href="/checkout-cancel.html" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="status-page">
+      <section class="status-card reveal visible">
+        <p class="eyebrow">Paiement non finalisé</p>
+        <h1>Commande annulée</h1>
+        <p>Ton panier est conservé. Tu peux reprendre le checkout à tout moment.</p>
+        <div class="product-actions">
+          <a class="cta" href="index.html#collections">Retour boutique</a>
+          <a class="ghost ghost-link" href="product.html">Voir les produits</a>
+        </div>
+      </section>
+    </main>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order_id");
+
+      fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventName: "checkout_error",
+          props: {
+            orderId: orderId || "",
+            reason: "cancel_page",
+          },
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    </script>
+  </body>
+</html>

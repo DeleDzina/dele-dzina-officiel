@@ -1,36 +1,84 @@
 {
   "items": [
     {
-      "title": "Maillot Desprits 1",
-      "description": "Maillot signature, coupe athlétique, finitions premium.",
-      "image": "images/maillot-desprits-1.jpg",
-      "price": "",
+      "id": "ensemble-gris",
+      "title": "Ensemble Gris Signature",
+      "description": "Ensemble premium gris, coupe droite, confort quotidien et finition clean.",
+      "image": "images/products/ensemble-gris.svg",
+      "price": 75,
+      "tag": "Best Seller",
+      "link": "product.html?id=ensemble-gris",
+      "active": true
+    },
+    {
+      "id": "jogging-noir",
+      "title": "Jogging Noir Délé",
+      "description": "Bas jogging noir technique, souple, durable et taillé pour la rue.",
+      "image": "images/products/jogging-noir.svg",
+      "price": 75,
       "tag": "Drop 01",
-      "link": "product.html"
+      "link": "product.html?id=jogging-noir",
+      "active": true
     },
     {
-      "title": "Maillot Blue Massiwa",
-      "description": "Bleu intense, texture respirante, identité forte.",
-      "image": "images/maillot-blue-massiwa.jpg",
-      "price": "",
-      "tag": "",
-      "link": "product.html"
+      "id": "tee-classic",
+      "title": "Tee-shirt Classic",
+      "description": "Tee-shirt logo brodé, coton lourd premium, coupe moderne.",
+      "image": "images/products/tee-classic.svg",
+      "price": 20,
+      "tag": "Essentiel",
+      "link": "product.html?id=tee-classic",
+      "active": true
     },
     {
-      "title": "Audi",
-      "description": "Pièce statement, silhouette structurée, vibe premium.",
-      "image": "images/audi.jpg",
-      "price": "",
-      "tag": "",
-      "link": "product.html"
+      "id": "maillot-bleu-massiwa",
+      "title": "Maillot Bleu Massiwa",
+      "description": "Maillot respirant bleu intense, design sport/street.",
+      "image": "images/products/maillot-bleu-massiwa.svg",
+      "price": 20,
+      "tag": "Sport",
+      "link": "product.html?id=maillot-bleu-massiwa",
+      "active": true
     },
     {
-      "title": "Bas Jogging",
-      "description": "Jogging coupe droite, confort street, finition propre.",
-      "image": "images/bas-jogging.jpg",
-      "price": "",
-      "tag": "",
-      "link": "product.html"
+      "id": "maillot-desprits-1",
+      "title": "Maillot Desprits 1",
+      "description": "Maillot signature Délé Dzina, coupe athlétique et détails premium.",
+      "image": "images/products/maillot-desprits-1.svg",
+      "price": 20,
+      "tag": "Nouveau",
+      "link": "product.html?id=maillot-desprits-1",
+      "active": true
+    },
+    {
+      "id": "ensemble-metal",
+      "title": "Ensemble Metal",
+      "description": "Set complet effet métal, visuel fort et texture premium.",
+      "image": "images/products/ensemble-metal.svg",
+      "price": 40,
+      "tag": "Limited",
+      "link": "product.html?id=ensemble-metal",
+      "active": true
+    },
+    {
+      "id": "ensemble-street-2",
+      "title": "Ensemble Street 2",
+      "description": "Deuxième ensemble street DD, coupe ajustée et finition minimaliste.",
+      "image": "images/products/ensemble-street-2.svg",
+      "price": 40,
+      "tag": "Drop 02",
+      "link": "product.html?id=ensemble-street-2",
+      "active": true
+    },
+    {
+      "id": "pull-premium",
+      "title": "Pull Premium",
+      "description": "Pull épais premium, confort thermique et style officiel de la marque.",
+      "image": "images/products/pull-premium.svg",
+      "price": 60,
+      "tag": "Premium",
+      "link": "product.html?id=pull-premium",
+      "active": true
     }
   ]
 }

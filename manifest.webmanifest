@@ -1,0 +1,17 @@
+{
+  "name": "Délé Dzina",
+  "short_name": "Délé Dzina",
+  "description": "Boutique officielle Délé Dzina",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0b0b",
+  "theme_color": "#0b0b0b",
+  "icons": [
+    {
+      "src": "/logo-dd.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

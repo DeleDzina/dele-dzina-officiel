@@ -3,7 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Veste Eclipse — Délé Dzina</title>
+    <title>Produit - Délé Dzina</title>
+    <meta name="description" content="Fiche produit officielle Délé Dzina avec paiement sécurisé par carte." />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#0b0b0b" />
+    <meta property="og:site_name" content="Délé Dzina" />
+    <meta property="og:type" content="product" />
+    <meta property="og:title" content="Produit - Délé Dzina" />
+    <meta property="og:description" content="Fiche produit officielle Délé Dzina avec paiement sécurisé par carte." />
+    <meta property="og:image" content="/logo-dd.png" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Produit - Délé Dzina" />
+    <meta property="twitter:description" content="Fiche produit officielle Délé Dzina avec paiement sécurisé par carte." />
+    <meta property="twitter:image" content="/logo-dd.png" />
+    <link rel="canonical" href="/product.html" />
+    <link rel="icon" href="/logo-dd.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,65 +27,129 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-page="product">
+    <a class="skip-link" href="#mainContent">Aller au contenu</a>
     <div class="ambient-glow"></div>
+
     <header class="site-header">
       <nav class="nav">
-        <a class="logo" href="index.html#hero">
+        <a class="logo" href="index.html#hero" aria-label="Accueil Délé Dzina">
           <span class="logo-text">Délé Dzina</span>
           <img class="logo-mark" src="Scroll%20dd.PNG" alt="Logo Délé Dzina" />
         </a>
+
         <div class="nav-links">
           <a href="index.html#hero">Accueil</a>
-          <a href="index.html#collections">Collections</a>
+          <a href="index.html#collections">Boutique</a>
           <a href="index.html#about">À propos</a>
           <a href="index.html#contact">Contact</a>
+          <a href="/admin/panel.html">Admin</a>
         </div>
-        <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
+
+        <div class="nav-actions">
+          <button
+            class="cart-button"
+            id="openCartBtn"
+            type="button"
+            aria-label="Ouvrir le panier"
+            aria-controls="cartDrawer"
+            aria-expanded="false"
+          >
+            Panier
+            <span class="cart-count" id="cartCount" aria-live="polite">0</span>
+          </button>
+          <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
+        </div>
       </nav>
+
       <div class="mobile-menu" id="mobileMenu">
         <a href="index.html#hero">Accueil</a>
-        <a href="index.html#collections">Collections</a>
+        <a href="index.html#collections">Boutique</a>
         <a href="index.html#about">À propos</a>
         <a href="index.html#contact">Contact</a>
+        <a href="/admin/panel.html">Admin</a>
       </div>
     </header>
 
-    <main class="product-page">
+    <main id="mainContent" class="product-page">
       <section class="product-hero">
         <div class="product-gallery" data-parallax>
-          <div class="product-main"></div>
-          <div class="product-thumbs">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <img
+            id="productImage"
+            class="product-main-image"
+            src="images/products/pull-premium.svg"
+            alt="Produit Délé Dzina"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
         </div>
+
         <div class="product-details">
-          <p class="eyebrow">Drop 01</p>
-          <h1>Veste Eclipse</h1>
-          <p class="product-price">320€</p>
-          <p>
-            Veste technique coupe oversize, col structuré, doublure satin noir. Effet carbone
-            avec reflets discrets. Pensée pour les scènes nocturnes et la ville.
-          </p>
+          <p class="eyebrow" id="productTag">Produit officiel</p>
+          <h1 id="productTitle">Produit</h1>
+          <p class="product-price" id="productPrice">0,00 EUR</p>
+          <p id="productDescription">Description du produit.</p>
+
+          <label class="field">
+            <span>Quantité</span>
+            <input id="productQty" type="number" min="1" max="20" value="1" />
+          </label>
+
           <ul class="product-specs">
-            <li>Disponible du XS au XL</li>
-            <li>Tissu technique imperméable</li>
-            <li>Logo brodé doré</li>
-            <li>Edition limitée</li>
+            <li>Paiement sécurisé par carte via Stripe</li>
+            <li>Confirmation immédiate de commande</li>
+            <li>Support client par email</li>
           </ul>
+
           <div class="product-actions">
-            <button class="cta">Acheter</button>
-            <button class="ghost">Ajouter à la wishlist</button>
+            <button class="cta" id="addToCartBtn" type="button">Ajouter au panier</button>
+            <button class="ghost" id="buyNowBtn" type="button">Acheter maintenant</button>
           </div>
-          <p class="product-note">Livraison offerte à partir de 200€.</p>
+
+          <p class="product-note">Livraison internationale. Le total exact est confirmé au checkout.</p>
         </div>
+      </section>
+
+      <section class="collections">
+        <div class="section-header reveal">
+          <h2>Produits associés</h2>
+          <p>Continue tes achats sur la boutique officielle.</p>
+        </div>
+        <div class="grid" id="relatedGrid"></div>
       </section>
     </main>
 
+    <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cartHeading" tabindex="-1">
+      <div class="cart-header">
+        <h2 id="cartHeading">Panier</h2>
+        <button id="closeCartBtn" class="icon-btn" type="button" aria-label="Fermer le panier">X</button>
+      </div>
+      <div class="cart-body" id="cartItems"></div>
+      <div class="cart-footer">
+        <label class="field">
+          <span>Email client (optionnel)</span>
+          <input id="checkoutEmail" type="email" placeholder="client@email.com" />
+        </label>
+        <div class="cart-total-row">
+          <span>Total</span>
+          <strong id="cartTotal">0,00 EUR</strong>
+        </div>
+        <button class="cta full" id="checkoutBtn" type="button">Payer par carte</button>
+        <p class="small-note">Paiement traité sur Stripe Checkout.</p>
+      </div>
+    </aside>
+
+    <div class="cart-backdrop" id="cartBackdrop"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
     <footer class="footer">
-      <p>© 2026 Délé Dzina. Tous droits réservés.</p>
+      <p>© <span id="currentYear"></span> Délé Dzina. Tous droits réservés.</p>
+      <div class="footer-links">
+        <a href="privacy.html">Confidentialité</a>
+        <a href="terms.html">Conditions</a>
+        <a href="index.html#collections">Boutique</a>
+      </div>
     </footer>
 
     <script src="script.js"></script>
