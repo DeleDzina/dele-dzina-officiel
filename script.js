@@ -4,6 +4,7 @@ const mobileMenu = document.getElementById("mobileMenu");
 const body = document.body;
 const heroLogo = document.querySelector(".hero-logo");
 const heroScrollBtn = document.querySelector(".hero-scroll");
+const heroScrollLogo = document.querySelector(".hero-scroll-logo");
 const collectionsGrid = document.getElementById("collectionsGrid");
 const heroTitle = document.getElementById("heroTitle");
 const heroSubtitle = document.getElementById("heroSubtitle");
@@ -48,6 +49,12 @@ const handleLogoMotion = () => {
   heroLogo.style.setProperty("--logo-rot", `${rot}deg`);
 };
 
+const handleScrollLogo = () => {
+  if (!heroScrollLogo) return;
+  const rotation = (window.scrollY * -0.6) % 360;
+  heroScrollLogo.style.transform = `rotate(${rotation}deg)`;
+};
+
 if (menuToggle && mobileMenu) {
   menuToggle.addEventListener("click", () => {
     mobileMenu.classList.toggle("open");
@@ -68,12 +75,14 @@ window.addEventListener("scroll", () => {
   parallax();
   handleHeaderSwap();
   handleLogoMotion();
+  handleScrollLogo();
 });
 
 window.addEventListener("load", () => {
   revealOnScroll();
   handleHeaderSwap();
   handleLogoMotion();
+  handleScrollLogo();
   loadContent();
 });
 
