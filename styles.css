@@ -428,6 +428,41 @@ section {
 
 .collections {
   background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.collections::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(circle at 50% 40%, rgba(214, 177, 93, 0.18), transparent 60%);
+  z-index: 0;
+}
+
+.collections::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(70vw, 720px);
+  height: min(70vw, 720px);
+  transform: translate(-50%, -50%);
+  background: url("logo%20dore%CC%81.png") center/contain no-repeat;
+  opacity: 0.18;
+  filter: drop-shadow(0 30px 80px rgba(214, 177, 93, 0.4));
+  mix-blend-mode: screen;
+  animation: collectionSpin 6s linear infinite;
+  z-index: 0;
+}
+
+@keyframes collectionSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
 }
 
 .section-header {
@@ -435,6 +470,8 @@ section {
   display: grid;
   gap: 16px;
   margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .section-header h2 {
@@ -452,6 +489,8 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .card {
