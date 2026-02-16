@@ -89,37 +89,69 @@ const adminLimiter = rateLimit({
   message: { error: "Trop de requêtes admin. Réessaie plus tard." },
 });
 
-app.use(
-  helmet(
-    IS_PRODUCTION
-      ? {
-          contentSecurityPolicy: {
-            directives: {
-              defaultSrc: ["'self'"],
-              scriptSrc: ["'self'", "'unsafe-inline'", "https://identity.netlify.com", "https://cdn.jsdelivr.net", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
-              styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-              imgSrc: ["'self'", "data:", "https:"],
-              fontSrc: ["'self'", "https://fonts.gstatic.com"],
-              connectSrc: [
-                "'self'",
-                "https://www.google-analytics.com",
-                "https://region1.google-analytics.com",
-                "https://identity.netlify.com",
-                "https://api.netlify.com",
-              ],
-              frameSrc: ["https://js.stripe.com", "https://hooks.stripe.com", "https://*.netlify.com"],
-              formAction: ["'self'", "https://checkout.stripe.com"],
-            },
-          },
-          crossOriginResourcePolicy: { policy: "cross-origin" },
-          referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-        }
-      : {
-          contentSecurityPolicy: false,
-          crossOriginResourcePolicy: false,
-        },
-  ),
-);
+const sharedScriptSrc = [
+  "'self'",
+  "'unsafe-inline'",
+  "https://identity.netlify.com",
+  "https://cdn.jsdelivr.net",
+  "https://www.googletagmanager.com",
+  "https://www.google-analytics.com",
+];
+
+const sharedCspDirectives = {
+  defaultSrc: ["'self'"],
+  styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+  imgSrc: ["'self'", "data:", "https:"],
+  fontSrc: ["'self'", "https://fonts.gstatic.com"],
+  connectSrc: [
+    "'self'",
+    "https://www.google-analytics.com",
+    "https://region1.google-analytics.com",
+    "https://identity.netlify.com",
+    "https://api.netlify.com",
+  ],
+  frameSrc: ["https://js.stripe.com", "https://hooks.stripe.com", "https://*.netlify.com"],
+  formAction: ["'self'", "https://checkout.stripe.com"],
+};
+
+if (IS_PRODUCTION) {
+  const defaultHelmet = helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...sharedCspDirectives,
+        scriptSrc: sharedScriptSrc,
+      },
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  });
+
+  const adminHelmet = helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...sharedCspDirectives,
+        // Decap CMS requires eval on /admin only.
+        scriptSrc: [...sharedScriptSrc, "'unsafe-eval'"],
+      },
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  });
+
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/admin")) {
+      return adminHelmet(req, res, next);
+    }
+    return defaultHelmet(req, res, next);
+  });
+} else {
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginResourcePolicy: false,
+    }),
+  );
+}
 
 app.use(compression());
 
