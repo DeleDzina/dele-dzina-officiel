@@ -14,7 +14,7 @@
       </div>
       <div class="admin-links">
         <a href="/">Voir le site</a>
-        <a href="/admin/">Ouvrir le CMS</a>
+        <a href="/dd-portal-269.html">Portail admin</a>
       </div>
     </header>
 
@@ -28,6 +28,141 @@
           <button id="logoutBtn" type="button" class="ghost">Effacer</button>
         </div>
         <p id="authStatus" class="status"></p>
+      </section>
+
+      <section class="panel-card">
+        <div class="section-head">
+          <h2>Contenu du site</h2>
+          <div class="row compact">
+            <button id="addSocialBtn" type="button" class="ghost">Ajouter réseau</button>
+            <button id="saveSiteBtn" type="button">Enregistrer contenu</button>
+          </div>
+        </div>
+
+        <p class="status small">
+          Modifie ici l’accueil, contact, réseaux et textes de confiance. Les changements sont visibles sans recoder.
+        </p>
+
+        <div class="site-editor">
+          <h3>Hero</h3>
+          <div class="site-grid">
+            <label>
+              <span>Titre hero</span>
+              <input id="siteHeroTitle" type="text" />
+            </label>
+            <label>
+              <span>Sous-titre hero</span>
+              <textarea id="siteHeroSubtitle"></textarea>
+            </label>
+            <label>
+              <span>Texte bouton hero</span>
+              <input id="siteHeroCtaText" type="text" />
+            </label>
+            <label>
+              <span>Meta hero (1 ligne = 1 badge)</span>
+              <textarea id="siteHeroMeta"></textarea>
+            </label>
+          </div>
+
+          <h3>Catalogue & vision</h3>
+          <div class="site-grid">
+            <label>
+              <span>Titre collections</span>
+              <input id="siteCollectionsTitle" type="text" />
+            </label>
+            <label>
+              <span>Sous-titre collections</span>
+              <textarea id="siteCollectionsSubtitle"></textarea>
+            </label>
+            <label>
+              <span>Titre vision</span>
+              <input id="siteVisionTitle" type="text" />
+            </label>
+            <label>
+              <span>Texte à propos</span>
+              <textarea id="siteAboutText"></textarea>
+            </label>
+          </div>
+
+          <h3>Contact</h3>
+          <div class="site-grid">
+            <label>
+              <span>Titre contact</span>
+              <input id="siteContactTitle" type="text" />
+            </label>
+            <label>
+              <span>Sous-titre contact</span>
+              <textarea id="siteContactSubtitle"></textarea>
+            </label>
+            <label>
+              <span>Titre newsletter</span>
+              <input id="siteNewsletterTitle" type="text" />
+            </label>
+            <label>
+              <span>Texte newsletter</span>
+              <textarea id="siteNewsletterSubtitle"></textarea>
+            </label>
+            <label>
+              <span>Titre réseaux</span>
+              <input id="siteSocialsTitle" type="text" />
+            </label>
+            <label>
+              <span>Titre bloc email</span>
+              <input id="siteDassiTitle" type="text" />
+            </label>
+            <label>
+              <span>Email contact</span>
+              <input id="siteContactEmail" type="email" />
+            </label>
+            <label>
+              <span>Texte bouton email</span>
+              <input id="siteContactButtonText" type="text" />
+            </label>
+          </div>
+
+          <h3>Réseaux sociaux</h3>
+          <div id="socialsEditor" class="socials-editor"></div>
+
+          <h3>Confiance (bas de page)</h3>
+          <div class="site-grid">
+            <label>
+              <span>Titre paiement</span>
+              <input id="siteTrustPaymentTitle" type="text" />
+            </label>
+            <label>
+              <span>Texte paiement</span>
+              <textarea id="siteTrustPaymentText"></textarea>
+            </label>
+            <label>
+              <span>Titre livraison</span>
+              <input id="siteTrustShippingTitle" type="text" />
+            </label>
+            <label>
+              <span>Texte livraison</span>
+              <textarea id="siteTrustShippingText"></textarea>
+            </label>
+            <label>
+              <span>Titre support</span>
+              <input id="siteTrustSupportTitle" type="text" />
+            </label>
+            <label>
+              <span>Texte support</span>
+              <textarea id="siteTrustSupportText"></textarea>
+            </label>
+          </div>
+
+          <h3>SEO & tracking</h3>
+          <div class="site-grid">
+            <label>
+              <span>URL du site (SEO)</span>
+              <input id="siteSiteUrl" type="url" placeholder="https://..." />
+            </label>
+            <label>
+              <span>GA4 Measurement ID</span>
+              <input id="siteGaMeasurementId" type="text" placeholder="G-XXXXXXXXXX" />
+            </label>
+          </div>
+        </div>
       </section>
 
       <section class="panel-card">

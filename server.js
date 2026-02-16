@@ -506,6 +506,18 @@ app.put("/api/admin/products", adminLimiter, requireAdmin, async (req, res) => {
   return res.json({ ok: true, items: normalized });
 });
 
+app.put("/api/admin/site", adminLimiter, requireAdmin, async (req, res) => {
+  if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
+    return res.status(400).json({ error: "Payload invalide: objet requis." });
+  }
+
+  const currentSite = await readJson(SITE_FILE, {});
+  const site = sanitizeSitePayload(req.body, currentSite);
+  await writeJson(SITE_FILE, site);
+
+  return res.json({ ok: true, site });
+});
+
 app.use(
   express.static(ROOT_DIR, {
     extensions: ["html"],
@@ -607,6 +619,70 @@ function slugify(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function sanitizeMultilineText(value, maxLen = 1000) {
+  return String(value || "")
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
+    .trim()
+    .slice(0, maxLen);
+}
+
+function sanitizeSitePayload(input, currentSite = {}) {
+  const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
+  const current = currentSite && typeof currentSite === "object" ? currentSite : {};
+
+  const rawHeroMeta = Array.isArray(source.hero_meta) ? source.hero_meta : current.hero_meta;
+  const heroMeta = (Array.isArray(rawHeroMeta) ? rawHeroMeta : [])
+    .map((entry) => sanitizeText(entry, 80))
+    .filter(Boolean)
+    .slice(0, 6);
+
+  const rawSocials = Array.isArray(source.socials) ? source.socials : current.socials;
+  const socials = (Array.isArray(rawSocials) ? rawSocials : [])
+    .map((entry) => {
+      const name = sanitizeText(entry?.name, 30);
+      const handle = sanitizeText(entry?.handle, 60);
+      const urlRaw = sanitizeText(entry?.url, 240);
+      const url = isAbsoluteHttpUrl(urlRaw) ? urlRaw : "";
+      if (!name) return null;
+      return { name, handle, url };
+    })
+    .filter(Boolean)
+    .slice(0, 12);
+
+  const siteUrlRaw = sanitizeText(source.site_url ?? current.site_url, 200);
+  const gaMeasurementId = sanitizeText(source.ga_measurement_id ?? current.ga_measurement_id, 30).toUpperCase();
+
+  return {
+    ...current,
+    hero_title: sanitizeText(source.hero_title ?? current.hero_title, 80),
+    hero_subtitle: sanitizeMultilineText(source.hero_subtitle ?? current.hero_subtitle, 320),
+    hero_cta_text: sanitizeText(source.hero_cta_text ?? current.hero_cta_text, 60),
+    hero_meta: heroMeta,
+    collections_title: sanitizeText(source.collections_title ?? current.collections_title, 60),
+    collections_subtitle: sanitizeMultilineText(source.collections_subtitle ?? current.collections_subtitle, 260),
+    vision_title: sanitizeText(source.vision_title ?? current.vision_title, 60),
+    about_text: sanitizeMultilineText(source.about_text ?? current.about_text, 1800),
+    contact_title: sanitizeText(source.contact_title ?? current.contact_title, 60),
+    contact_subtitle: sanitizeMultilineText(source.contact_subtitle ?? current.contact_subtitle, 220),
+    newsletter_title: sanitizeText(source.newsletter_title ?? current.newsletter_title, 60),
+    newsletter_subtitle: sanitizeMultilineText(source.newsletter_subtitle ?? current.newsletter_subtitle, 220),
+    socials_title: sanitizeText(source.socials_title ?? current.socials_title, 60),
+    dassi_title: sanitizeText(source.dassi_title ?? current.dassi_title, 60),
+    contact_email: sanitizeText(source.contact_email ?? current.contact_email, 120).toLowerCase(),
+    contact_button_text: sanitizeText(source.contact_button_text ?? current.contact_button_text, 60),
+    contact_cities: sanitizeMultilineText(source.contact_cities ?? current.contact_cities, 180),
+    trust_payment_title: sanitizeText(source.trust_payment_title ?? current.trust_payment_title, 60),
+    trust_payment_text: sanitizeMultilineText(source.trust_payment_text ?? current.trust_payment_text, 200),
+    trust_shipping_title: sanitizeText(source.trust_shipping_title ?? current.trust_shipping_title, 60),
+    trust_shipping_text: sanitizeMultilineText(source.trust_shipping_text ?? current.trust_shipping_text, 200),
+    trust_support_title: sanitizeText(source.trust_support_title ?? current.trust_support_title, 60),
+    trust_support_text: sanitizeMultilineText(source.trust_support_text ?? current.trust_support_text, 200),
+    site_url: isAbsoluteHttpUrl(siteUrlRaw) ? siteUrlRaw : "",
+    ga_measurement_id: gaMeasurementId,
+    socials,
+  };
 }
 
 function resolveBaseUrl(req) {

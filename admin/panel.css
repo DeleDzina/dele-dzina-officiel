@@ -126,6 +126,64 @@ button.ghost {
   min-height: 20px;
 }
 
+.status.small {
+  font-size: 0.9rem;
+}
+
+.site-editor {
+  display: grid;
+  gap: 14px;
+}
+
+.site-editor h3 {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+}
+
+.site-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+}
+
+label span {
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.3px;
+}
+
+.site-editor textarea {
+  min-height: 78px;
+  resize: vertical;
+}
+
+.socials-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.social-row {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.social-row-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
 .products-editor {
   display: grid;
   gap: 10px;
@@ -215,5 +273,10 @@ td .row {
   .row input,
   .row button {
     width: 100%;
+  }
+
+  .site-grid,
+  .social-row-grid {
+    grid-template-columns: 1fr;
   }
 }

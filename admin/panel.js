@@ -4,6 +4,7 @@ const state = {
   token: "",
   products: [],
   orders: [],
+  site: {},
 };
 
 const el = {
@@ -11,11 +12,42 @@ const el = {
   connectBtn: document.getElementById("connectBtn"),
   logoutBtn: document.getElementById("logoutBtn"),
   authStatus: document.getElementById("authStatus"),
+
+  saveSiteBtn: document.getElementById("saveSiteBtn"),
+  addSocialBtn: document.getElementById("addSocialBtn"),
+  socialsEditor: document.getElementById("socialsEditor"),
+  siteHeroTitle: document.getElementById("siteHeroTitle"),
+  siteHeroSubtitle: document.getElementById("siteHeroSubtitle"),
+  siteHeroCtaText: document.getElementById("siteHeroCtaText"),
+  siteHeroMeta: document.getElementById("siteHeroMeta"),
+  siteCollectionsTitle: document.getElementById("siteCollectionsTitle"),
+  siteCollectionsSubtitle: document.getElementById("siteCollectionsSubtitle"),
+  siteVisionTitle: document.getElementById("siteVisionTitle"),
+  siteAboutText: document.getElementById("siteAboutText"),
+  siteContactTitle: document.getElementById("siteContactTitle"),
+  siteContactSubtitle: document.getElementById("siteContactSubtitle"),
+  siteNewsletterTitle: document.getElementById("siteNewsletterTitle"),
+  siteNewsletterSubtitle: document.getElementById("siteNewsletterSubtitle"),
+  siteSocialsTitle: document.getElementById("siteSocialsTitle"),
+  siteDassiTitle: document.getElementById("siteDassiTitle"),
+  siteContactEmail: document.getElementById("siteContactEmail"),
+  siteContactButtonText: document.getElementById("siteContactButtonText"),
+  siteTrustPaymentTitle: document.getElementById("siteTrustPaymentTitle"),
+  siteTrustPaymentText: document.getElementById("siteTrustPaymentText"),
+  siteTrustShippingTitle: document.getElementById("siteTrustShippingTitle"),
+  siteTrustShippingText: document.getElementById("siteTrustShippingText"),
+  siteTrustSupportTitle: document.getElementById("siteTrustSupportTitle"),
+  siteTrustSupportText: document.getElementById("siteTrustSupportText"),
+  siteSiteUrl: document.getElementById("siteSiteUrl"),
+  siteGaMeasurementId: document.getElementById("siteGaMeasurementId"),
+
   productsEditor: document.getElementById("productsEditor"),
   addProductBtn: document.getElementById("addProductBtn"),
   saveProductsBtn: document.getElementById("saveProductsBtn"),
+
   refreshOrdersBtn: document.getElementById("refreshOrdersBtn"),
   ordersBody: document.getElementById("ordersBody"),
+
   panelToast: document.getElementById("panelToast"),
 };
 
@@ -27,6 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (state.token) {
     loadOverview();
+  } else {
+    setStatus("Connecte-toi avec ADMIN_API_TOKEN.");
   }
 });
 
@@ -48,10 +82,13 @@ function bindEvents() {
     localStorage.removeItem(TOKEN_KEY);
     if (el.adminToken) el.adminToken.value = "";
     setStatus("Token effacé.");
+
     state.products = [];
     state.orders = [];
+    state.site = {};
     renderProducts();
     renderOrders();
+    renderSiteForm();
   });
 
   el.addProductBtn?.addEventListener("click", () => {
@@ -69,6 +106,18 @@ function bindEvents() {
 
   el.saveProductsBtn?.addEventListener("click", saveProducts);
   el.refreshOrdersBtn?.addEventListener("click", loadOrdersOnly);
+  el.saveSiteBtn?.addEventListener("click", saveSite);
+
+  el.addSocialBtn?.addEventListener("click", () => {
+    const socials = Array.isArray(state.site.socials) ? state.site.socials : [];
+    socials.push({
+      name: "Réseau",
+      handle: "",
+      url: "https://",
+    });
+    state.site.socials = socials;
+    renderSocialsEditor();
+  });
 
   el.productsEditor?.addEventListener("click", (event) => {
     const target = event.target;
@@ -82,6 +131,22 @@ function bindEvents() {
 
     state.products.splice(index, 1);
     renderProducts();
+  });
+
+  el.socialsEditor?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const removeBtn = target.closest("button[data-action='remove-social']");
+    if (!removeBtn) return;
+
+    const index = Number(removeBtn.getAttribute("data-index"));
+    if (!Number.isInteger(index)) return;
+
+    const socials = Array.isArray(state.site.socials) ? state.site.socials : [];
+    socials.splice(index, 1);
+    state.site.socials = socials;
+    renderSocialsEditor();
   });
 
   el.ordersBody?.addEventListener("click", async (event) => {
@@ -117,7 +182,9 @@ async function loadOverview() {
     const payload = await api("/api/admin/overview", { method: "GET" });
     state.products = Array.isArray(payload.products) ? payload.products : [];
     state.orders = Array.isArray(payload.orders) ? payload.orders : [];
+    state.site = payload.site && typeof payload.site === "object" ? payload.site : {};
 
+    renderSiteForm();
     renderProducts();
     renderOrders();
 
@@ -144,11 +211,141 @@ async function loadOrdersOnly() {
   }
 }
 
+function renderSiteForm() {
+  writeInput(el.siteHeroTitle, state.site.hero_title);
+  writeInput(el.siteHeroSubtitle, state.site.hero_subtitle);
+  writeInput(el.siteHeroCtaText, state.site.hero_cta_text);
+  writeInput(el.siteHeroMeta, asLines(state.site.hero_meta));
+  writeInput(el.siteCollectionsTitle, state.site.collections_title);
+  writeInput(el.siteCollectionsSubtitle, state.site.collections_subtitle);
+  writeInput(el.siteVisionTitle, state.site.vision_title);
+  writeInput(el.siteAboutText, state.site.about_text);
+  writeInput(el.siteContactTitle, state.site.contact_title);
+  writeInput(el.siteContactSubtitle, state.site.contact_subtitle);
+  writeInput(el.siteNewsletterTitle, state.site.newsletter_title);
+  writeInput(el.siteNewsletterSubtitle, state.site.newsletter_subtitle);
+  writeInput(el.siteSocialsTitle, state.site.socials_title);
+  writeInput(el.siteDassiTitle, state.site.dassi_title);
+  writeInput(el.siteContactEmail, state.site.contact_email);
+  writeInput(el.siteContactButtonText, state.site.contact_button_text);
+  writeInput(el.siteTrustPaymentTitle, state.site.trust_payment_title);
+  writeInput(el.siteTrustPaymentText, state.site.trust_payment_text);
+  writeInput(el.siteTrustShippingTitle, state.site.trust_shipping_title);
+  writeInput(el.siteTrustShippingText, state.site.trust_shipping_text);
+  writeInput(el.siteTrustSupportTitle, state.site.trust_support_title);
+  writeInput(el.siteTrustSupportText, state.site.trust_support_text);
+  writeInput(el.siteSiteUrl, state.site.site_url);
+  writeInput(el.siteGaMeasurementId, state.site.ga_measurement_id);
+
+  renderSocialsEditor();
+}
+
+function renderSocialsEditor() {
+  if (!el.socialsEditor) return;
+  const socials = Array.isArray(state.site.socials) ? state.site.socials : [];
+
+  if (!socials.length) {
+    el.socialsEditor.innerHTML = `<p class="status">Aucun réseau. Clique "Ajouter réseau".</p>`;
+    return;
+  }
+
+  el.socialsEditor.innerHTML = socials
+    .map((social, index) => {
+      return `
+      <article class="social-row" data-index="${index}">
+        <div class="social-row-grid">
+          <label>
+            <span>Nom</span>
+            <input data-field="name" value="${escapeAttr(social.name || "")}" />
+          </label>
+          <label>
+            <span>Handle</span>
+            <input data-field="handle" value="${escapeAttr(social.handle || "")}" />
+          </label>
+          <label>
+            <span>Lien</span>
+            <input data-field="url" value="${escapeAttr(social.url || "")}" />
+          </label>
+        </div>
+        <div class="product-tools">
+          <button type="button" class="ghost" data-action="remove-social" data-index="${index}">Supprimer</button>
+        </div>
+      </article>
+      `;
+    })
+    .join("");
+}
+
+function collectSiteFromForm() {
+  const socials = Array.from(document.querySelectorAll(".social-row")).map((row) => {
+    const read = (field) => {
+      const input = row.querySelector(`[data-field='${field}']`);
+      return input ? String(input.value || "").trim() : "";
+    };
+
+    return {
+      name: read("name"),
+      handle: read("handle"),
+      url: read("url"),
+    };
+  });
+
+  return {
+    hero_title: readValue(el.siteHeroTitle),
+    hero_subtitle: readValue(el.siteHeroSubtitle),
+    hero_cta_text: readValue(el.siteHeroCtaText),
+    hero_meta: readLines(el.siteHeroMeta),
+    collections_title: readValue(el.siteCollectionsTitle),
+    collections_subtitle: readValue(el.siteCollectionsSubtitle),
+    vision_title: readValue(el.siteVisionTitle),
+    about_text: readValue(el.siteAboutText),
+    contact_title: readValue(el.siteContactTitle),
+    contact_subtitle: readValue(el.siteContactSubtitle),
+    newsletter_title: readValue(el.siteNewsletterTitle),
+    newsletter_subtitle: readValue(el.siteNewsletterSubtitle),
+    socials_title: readValue(el.siteSocialsTitle),
+    dassi_title: readValue(el.siteDassiTitle),
+    contact_email: readValue(el.siteContactEmail),
+    contact_button_text: readValue(el.siteContactButtonText),
+    trust_payment_title: readValue(el.siteTrustPaymentTitle),
+    trust_payment_text: readValue(el.siteTrustPaymentText),
+    trust_shipping_title: readValue(el.siteTrustShippingTitle),
+    trust_shipping_text: readValue(el.siteTrustShippingText),
+    trust_support_title: readValue(el.siteTrustSupportTitle),
+    trust_support_text: readValue(el.siteTrustSupportText),
+    site_url: readValue(el.siteSiteUrl),
+    ga_measurement_id: readValue(el.siteGaMeasurementId),
+    socials: socials.filter((entry) => entry.name),
+  };
+}
+
+async function saveSite() {
+  if (!state.token) {
+    setStatus("Connecte-toi d'abord.");
+    return;
+  }
+
+  const site = collectSiteFromForm();
+
+  try {
+    const payload = await api("/api/admin/site", {
+      method: "PUT",
+      body: JSON.stringify(site),
+    });
+
+    state.site = payload.site && typeof payload.site === "object" ? payload.site : site;
+    renderSiteForm();
+    showToast("Contenu du site enregistré.");
+  } catch (error) {
+    showToast(error.message || "Échec de sauvegarde du contenu.");
+  }
+}
+
 function renderProducts() {
   if (!el.productsEditor) return;
 
   if (!state.products.length) {
-    el.productsEditor.innerHTML = `<p class="status">Aucun produit. Utilise \"Ajouter\".</p>`;
+    el.productsEditor.innerHTML = `<p class="status">Aucun produit. Utilise "Ajouter".</p>`;
     return;
   }
 
@@ -174,7 +371,7 @@ function renderProducts() {
             <input data-field="tag" value="${escapeAttr(product.tag || "")}" />
           </label>
           <label>
-            <span>Image</span>
+            <span>Image (URL ou chemin)</span>
             <input data-field="image" value="${escapeAttr(product.image || "")}" />
           </label>
           <label>
@@ -360,6 +557,28 @@ function slugify(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function readValue(input) {
+  return input ? String(input.value || "").trim() : "";
+}
+
+function writeInput(input, value) {
+  if (!input) return;
+  input.value = String(value || "");
+}
+
+function readLines(input) {
+  const text = readValue(input);
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function asLines(value) {
+  if (!Array.isArray(value)) return "";
+  return value.map((entry) => String(entry || "")).filter(Boolean).join("\n");
 }
 
 function escapeHtml(value) {

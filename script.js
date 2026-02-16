@@ -40,11 +40,27 @@ const elements = {
   newsletterMessage: document.getElementById("newsletterMessage"),
   heroTitle: document.getElementById("heroTitle"),
   heroSubtitle: document.getElementById("heroSubtitle"),
+  heroCta: document.getElementById("heroCta"),
   heroMeta: document.getElementById("heroMeta"),
+  collectionsTitle: document.getElementById("collectionsTitle"),
+  collectionsSubtitle: document.getElementById("collectionsSubtitle"),
   visionTitle: document.getElementById("visionTitle"),
   aboutText: document.getElementById("aboutText"),
+  contactTitle: document.getElementById("contactTitle"),
+  contactSubtitle: document.getElementById("contactSubtitle"),
+  newsletterTitle: document.getElementById("newsletterTitle"),
+  newsletterSubtitle: document.getElementById("newsletterSubtitle"),
+  socialsTitle: document.getElementById("socialsTitle"),
+  dassiTitle: document.getElementById("dassiTitle"),
   socialList: document.getElementById("socialList"),
   contactEmail: document.getElementById("contactEmail"),
+  contactMailLink: document.getElementById("contactMailLink"),
+  trustPaymentTitle: document.getElementById("trustPaymentTitle"),
+  trustPaymentText: document.getElementById("trustPaymentText"),
+  trustShippingTitle: document.getElementById("trustShippingTitle"),
+  trustShippingText: document.getElementById("trustShippingText"),
+  trustSupportTitle: document.getElementById("trustSupportTitle"),
+  trustSupportText: document.getElementById("trustSupportText"),
   currentYear: document.getElementById("currentYear"),
   productImage: document.getElementById("productImage"),
   productTitle: document.getElementById("productTitle"),
@@ -206,9 +222,42 @@ async function loadSiteContent() {
 
   if (elements.heroTitle && siteData.hero_title) elements.heroTitle.textContent = siteData.hero_title;
   if (elements.heroSubtitle && siteData.hero_subtitle) elements.heroSubtitle.textContent = siteData.hero_subtitle;
+  if (elements.heroCta && siteData.hero_cta_text) elements.heroCta.textContent = siteData.hero_cta_text;
+  if (elements.collectionsTitle && siteData.collections_title) elements.collectionsTitle.textContent = siteData.collections_title;
+  if (elements.collectionsSubtitle && siteData.collections_subtitle) elements.collectionsSubtitle.textContent = siteData.collections_subtitle;
   if (elements.visionTitle && siteData.vision_title) elements.visionTitle.textContent = siteData.vision_title;
   if (elements.aboutText && siteData.about_text) elements.aboutText.textContent = siteData.about_text;
+  if (elements.contactTitle && siteData.contact_title) elements.contactTitle.textContent = siteData.contact_title;
+  if (elements.contactSubtitle && siteData.contact_subtitle) elements.contactSubtitle.textContent = siteData.contact_subtitle;
+  if (elements.newsletterTitle && siteData.newsletter_title) elements.newsletterTitle.textContent = siteData.newsletter_title;
+  if (elements.newsletterSubtitle && siteData.newsletter_subtitle) {
+    elements.newsletterSubtitle.textContent = siteData.newsletter_subtitle;
+  }
+  if (elements.socialsTitle && siteData.socials_title) elements.socialsTitle.textContent = siteData.socials_title;
+  if (elements.dassiTitle && siteData.dassi_title) elements.dassiTitle.textContent = siteData.dassi_title;
   if (elements.contactEmail && siteData.contact_email) elements.contactEmail.textContent = siteData.contact_email;
+  if (elements.contactMailLink && siteData.contact_email) elements.contactMailLink.href = `mailto:${siteData.contact_email}`;
+  if (elements.contactMailLink && siteData.contact_button_text) {
+    elements.contactMailLink.textContent = siteData.contact_button_text;
+  }
+  if (elements.trustPaymentTitle && siteData.trust_payment_title) {
+    elements.trustPaymentTitle.textContent = siteData.trust_payment_title;
+  }
+  if (elements.trustPaymentText && siteData.trust_payment_text) {
+    elements.trustPaymentText.textContent = siteData.trust_payment_text;
+  }
+  if (elements.trustShippingTitle && siteData.trust_shipping_title) {
+    elements.trustShippingTitle.textContent = siteData.trust_shipping_title;
+  }
+  if (elements.trustShippingText && siteData.trust_shipping_text) {
+    elements.trustShippingText.textContent = siteData.trust_shipping_text;
+  }
+  if (elements.trustSupportTitle && siteData.trust_support_title) {
+    elements.trustSupportTitle.textContent = siteData.trust_support_title;
+  }
+  if (elements.trustSupportText && siteData.trust_support_text) {
+    elements.trustSupportText.textContent = siteData.trust_support_text;
+  }
 
   if (elements.heroMeta && Array.isArray(siteData.hero_meta)) {
     elements.heroMeta.innerHTML = "";
