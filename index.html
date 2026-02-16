@@ -42,6 +42,8 @@
 
     <header class="site-header">
       <nav class="nav">
+        <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
+
         <a class="logo" href="#hero" aria-label="Accueil Délé Dzina">
           <span class="logo-text">Délé Dzina</span>
           <img class="logo-mark" src="Scroll%20dd.PNG" alt="Logo Délé Dzina" />
@@ -55,6 +57,10 @@
         </div>
 
         <div class="nav-actions">
+          <label class="nav-search" for="productSearch">
+            <span class="sr-only">Recherche produit</span>
+            <input id="productSearch" type="search" placeholder="Recherche..." autocomplete="off" />
+          </label>
           <button
             class="cart-button"
             id="openCartBtn"
@@ -66,7 +72,6 @@
             Panier
             <span class="cart-count" id="cartCount" aria-live="polite">0</span>
           </button>
-          <button class="menu-toggle" aria-label="Ouvrir le menu">Menu</button>
         </div>
       </nav>
 
@@ -116,21 +121,6 @@
         </button>
       </section>
 
-      <section class="trust-strip reveal">
-        <article>
-          <h3>Paiement Carte</h3>
-          <p>Checkout Stripe sécurisé (Visa, Mastercard, Apple Pay selon appareil).</p>
-        </article>
-        <article>
-          <h3>Livraison</h3>
-          <p>France, Comores et international avec suivi de commande.</p>
-        </article>
-        <article>
-          <h3>Support</h3>
-          <p>Réponse rapide par email pour commandes, SAV et collaborations.</p>
-        </article>
-      </section>
-
       <section class="collections" id="collections">
         <div class="collections-spin-mark" aria-hidden="true"></div>
 
@@ -140,10 +130,6 @@
         </div>
 
         <div class="shop-toolbar reveal">
-          <label class="field">
-            <span>Recherche</span>
-            <input id="productSearch" type="search" placeholder="Ex: pull, maillot, jogging" autocomplete="off" />
-          </label>
           <label class="field">
             <span>Trier</span>
             <select id="productSort">
@@ -215,6 +201,21 @@
           </div>
         </div>
       </section>
+
+      <section class="trust-strip trust-strip-end reveal">
+        <article>
+          <h3>Paiement Carte</h3>
+          <p>Checkout Stripe sécurisé (Visa, Mastercard, Apple Pay selon appareil).</p>
+        </article>
+        <article>
+          <h3>Livraison</h3>
+          <p>France, Comores et international avec suivi de commande.</p>
+        </article>
+        <article>
+          <h3>Support</h3>
+          <p>Réponse rapide par email pour commandes, SAV et collaborations.</p>
+        </article>
+      </section>
     </main>
 
     <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cartHeading" tabindex="-1">
@@ -273,5 +274,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-cd "/Users/undd269/Documents/Délé Dzina site web"
-GIT_TERMINAL_PROMPT=1 git push origin main
