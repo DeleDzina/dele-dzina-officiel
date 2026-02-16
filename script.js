@@ -259,7 +259,24 @@ async function loadProducts() {
 
 function setupHomePage() {
   if (elements.productSearch) {
-    elements.productSearch.addEventListener("input", renderHomeProducts);
+    const handleSearchUpdate = () => {
+      renderHomeProducts();
+
+      // On small screens, jump to the catalogue so the user sees results update instantly.
+      if (!window.matchMedia("(max-width: 900px)").matches) return;
+      const collectionsSection = document.getElementById("collections");
+      if (!collectionsSection) return;
+      if (String(elements.productSearch?.value || "").trim().length === 0) return;
+
+      const top = collectionsSection.getBoundingClientRect().top;
+      if (top > 180) {
+        collectionsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
+    elements.productSearch.addEventListener("input", handleSearchUpdate);
+    elements.productSearch.addEventListener("search", handleSearchUpdate);
+    elements.productSearch.addEventListener("change", handleSearchUpdate);
   }
 
   if (elements.productSort) {
