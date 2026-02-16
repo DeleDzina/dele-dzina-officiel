@@ -430,6 +430,7 @@ section {
   background: #000;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .collections::before {
@@ -440,28 +441,41 @@ section {
   z-index: 0;
 }
 
-.collections::after {
-  content: "";
+.collections-spin-mark {
   position: absolute;
   left: 50%;
   top: 50%;
   width: min(70vw, 720px);
   height: min(70vw, 720px);
-  transform: translate(-50%, -50%);
+  transform: translate3d(-50%, -50%, 0);
   background: url("images/logo-dore.png") center/contain no-repeat;
   opacity: 0.28;
   filter: drop-shadow(0 30px 80px rgba(214, 177, 93, 0.4));
   mix-blend-mode: screen;
   animation: collectionSpin 6s linear infinite;
+  -webkit-animation: collectionSpin 6s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  pointer-events: none;
   z-index: 0;
+}
+
+@-webkit-keyframes collectionSpin {
+  from {
+    transform: translate3d(-50%, -50%, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(-50%, -50%, 0) rotate(-360deg);
+  }
 }
 
 @keyframes collectionSpin {
   from {
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate3d(-50%, -50%, 0) rotate(0deg);
   }
   to {
-    transform: translate(-50%, -50%) rotate(-360deg);
+    transform: translate3d(-50%, -50%, 0) rotate(-360deg);
   }
 }
 
@@ -1294,5 +1308,14 @@ textarea:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .collections-spin-mark {
+    animation-duration: 6s !important;
+    animation-iteration-count: infinite !important;
+    animation-timing-function: linear !important;
+    -webkit-animation-duration: 6s !important;
+    -webkit-animation-iteration-count: infinite !important;
+    -webkit-animation-timing-function: linear !important;
   }
 }
