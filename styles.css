@@ -461,6 +461,17 @@ section {
   z-index: 0;
 }
 
+@media (max-width: 900px) {
+  .collections-spin-mark {
+    top: 34%;
+    width: min(92vw, 500px);
+    height: min(92vw, 500px);
+    opacity: 0.42;
+    mix-blend-mode: normal;
+    filter: drop-shadow(0 24px 64px rgba(214, 177, 93, 0.42)) saturate(1.18) brightness(1.08);
+  }
+}
+
 @-webkit-keyframes collectionSpin {
   from {
     transform: translate3d(-50%, -50%, 0) rotate(0deg);
