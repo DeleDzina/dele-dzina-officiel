@@ -24,6 +24,8 @@ const elements = {
   collectionsGrid: document.getElementById("collectionsGrid"),
   relatedGrid: document.getElementById("relatedGrid"),
   productSearch: document.getElementById("productSearch"),
+  searchToggleBtn: document.getElementById("searchToggleBtn"),
+  searchPopover: document.getElementById("searchPopover"),
   productSort: document.getElementById("productSort"),
   openCartBtn: document.getElementById("openCartBtn"),
   closeCartBtn: document.getElementById("closeCartBtn"),
@@ -89,6 +91,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupProductPage();
   }
 
+  setupLiveSync(page);
+
   renderCart();
   updateCartCount();
   revealOnScroll();
@@ -119,14 +123,40 @@ function setupStaticUI() {
     });
   }
 
+  if (elements.searchToggleBtn && elements.searchPopover) {
+    elements.searchToggleBtn.setAttribute("aria-expanded", "false");
+    elements.searchToggleBtn.addEventListener("click", () => {
+      if (!elements.searchPopover) return;
+      const willOpen = elements.searchPopover.hasAttribute("hidden");
+      if (willOpen) {
+        elements.searchPopover.removeAttribute("hidden");
+        elements.searchToggleBtn?.setAttribute("aria-expanded", "true");
+        elements.productSearch?.focus();
+      } else {
+        elements.searchPopover.setAttribute("hidden", "");
+        elements.searchToggleBtn?.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
   document.addEventListener("click", (event) => {
-    if (!elements.mobileMenu || !elements.menuToggle) return;
     const target = event.target;
     if (!(target instanceof Element)) return;
-    const clickedInsideMenu = elements.mobileMenu.contains(target) || elements.menuToggle.contains(target);
-    if (!clickedInsideMenu) {
-      elements.mobileMenu.classList.remove("open");
-      elements.menuToggle?.setAttribute("aria-expanded", "false");
+
+    if (elements.mobileMenu && elements.menuToggle) {
+      const clickedInsideMenu = elements.mobileMenu.contains(target) || elements.menuToggle.contains(target);
+      if (!clickedInsideMenu) {
+        elements.mobileMenu.classList.remove("open");
+        elements.menuToggle?.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    if (elements.searchPopover && elements.searchToggleBtn) {
+      const clickedInsideSearch = elements.searchPopover.contains(target) || elements.searchToggleBtn.contains(target);
+      if (!clickedInsideSearch) {
+        elements.searchPopover.setAttribute("hidden", "");
+        elements.searchToggleBtn.setAttribute("aria-expanded", "false");
+      }
     }
   });
 
@@ -339,17 +369,79 @@ function setupHomePage() {
   renderHomeProducts();
 }
 
+function setupLiveSync(page) {
+  if (page !== "home" && page !== "product") return;
+
+  let busy = false;
+  const syncNow = async () => {
+    if (busy) return;
+    busy = true;
+
+    const beforeSite = computeSiteDigest();
+    const beforeProducts = computeProductsDigest();
+
+    try {
+      await Promise.all([loadSiteContent(), loadProducts()]);
+
+      if (page === "home") {
+        renderHomeProducts();
+      } else if (page === "product") {
+        refreshProductView();
+      }
+
+      const afterSite = computeSiteDigest();
+      const afterProducts = computeProductsDigest();
+      if (beforeSite !== afterSite || beforeProducts !== afterProducts) {
+        showToast("Mise à jour du site chargée.");
+      }
+    } catch (_error) {
+      // Silent: keep storefront usable even if sync fails.
+    } finally {
+      busy = false;
+    }
+  };
+
+  window.addEventListener("focus", () => {
+    void syncNow();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      void syncNow();
+    }
+  });
+}
+
+function computeSiteDigest() {
+  return JSON.stringify(state.site || {});
+}
+
+function computeProductsDigest() {
+  return JSON.stringify(
+    (state.products || []).map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      image: item.image,
+      price: item.price,
+      tag: item.tag,
+      active: item.active,
+    })),
+  );
+}
+
 function renderHomeProducts() {
   if (!elements.collectionsGrid) return;
 
-  const query = String(elements.productSearch?.value || "").trim().toLowerCase();
+  const query = normalizeSearchText(elements.productSearch?.value || "");
   const sort = String(elements.productSort?.value || "featured");
 
   const filtered = state.products
     .filter((product) => product.active)
     .filter((product) => {
       if (!query) return true;
-      return [product.title, product.description, product.tag].join(" ").toLowerCase().includes(query);
+      const haystack = normalizeSearchText([product.title, product.description, product.tag, product.id].join(" "));
+      return haystack.includes(query);
     });
 
   const sorted = filtered.slice();
@@ -445,6 +537,17 @@ function setupProductPage() {
       showToast("Produit ajouté au panier.");
     });
   }
+}
+
+function refreshProductView() {
+  const productId = new URLSearchParams(window.location.search).get("id");
+  const activeProducts = state.products.filter((product) => product.active);
+  const selected =
+    activeProducts.find((product) => product.id === productId) || activeProducts[0] || null;
+
+  if (!selected) return;
+  renderProductDetails(selected);
+  renderRelatedProducts(selected.id);
 }
 
 function renderProductDetails(product) {
@@ -548,6 +651,10 @@ function setupCartEvents() {
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeCart();
+      if (elements.searchPopover && elements.searchToggleBtn) {
+        elements.searchPopover.setAttribute("hidden", "");
+        elements.searchToggleBtn.setAttribute("aria-expanded", "false");
+      }
     }
   });
 }
@@ -841,7 +948,7 @@ function formatCurrency(value) {
 
 async function fetchJsonWithFallback(primaryUrl, fallbackUrl, fallbackValue) {
   try {
-    const primaryRes = await fetch(primaryUrl);
+    const primaryRes = await fetch(primaryUrl, { cache: "no-store" });
     if (primaryRes.ok) {
       return await primaryRes.json();
     }
@@ -850,7 +957,7 @@ async function fetchJsonWithFallback(primaryUrl, fallbackUrl, fallbackValue) {
   }
 
   try {
-    const fallbackRes = await fetch(fallbackUrl);
+    const fallbackRes = await fetch(fallbackUrl, { cache: "no-store" });
     if (fallbackRes.ok) {
       return await fallbackRes.json();
     }
@@ -903,6 +1010,16 @@ function trackEvent(eventName, props = {}) {
   }).catch(() => {
     // Silent fail for tracking.
   });
+}
+
+function normalizeSearchText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function updateSeoTags({ title, description, image, type = "website", price } = {}) {

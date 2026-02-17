@@ -57,18 +57,35 @@
         </div>
 
         <div class="nav-actions">
-          <label class="nav-search" for="productSearch">
-            <span class="sr-only">Recherche produit</span>
-            <input
-              id="productSearch"
-              type="search"
-              placeholder="Recherche..."
-              autocomplete="off"
-              autocapitalize="none"
-              spellcheck="false"
-              enterkeyhint="search"
-            />
-          </label>
+          <button
+            class="search-toggle"
+            id="searchToggleBtn"
+            type="button"
+            aria-label="Ouvrir la recherche"
+            aria-controls="searchPopover"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14Zm0 2a5 5 0 1 0 0 10a5 5 0 0 0 0-10Zm6.71 11.29l2 2a1 1 0 0 1-1.42 1.42l-2-2a1 1 0 0 1 1.42-1.42Z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+          <div class="nav-search-popover" id="searchPopover" hidden>
+            <label class="nav-search" for="productSearch">
+              <span class="sr-only">Recherche produit</span>
+              <input
+                id="productSearch"
+                type="search"
+                placeholder="Recherche produit..."
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                enterkeyhint="search"
+              />
+            </label>
+          </div>
           <button
             class="cart-button"
             id="openCartBtn"

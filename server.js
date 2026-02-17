@@ -199,6 +199,10 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
 });
 
 app.use("/api", apiLimiter);
+app.use("/api", (_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
 app.use(express.json({ limit: "12mb" }));
 
 app.get("/api/health", async (_req, res) => {
