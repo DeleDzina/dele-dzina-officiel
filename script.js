@@ -410,6 +410,12 @@ function setupLiveSync(page) {
       void syncNow();
     }
   });
+
+  // Keep storefront content synced even if user stays on the page for long sessions.
+  setInterval(() => {
+    if (document.visibilityState !== "visible") return;
+    void syncNow();
+  }, 45000);
 }
 
 function computeSiteDigest() {
@@ -440,8 +446,7 @@ function renderHomeProducts() {
     .filter((product) => product.active)
     .filter((product) => {
       if (!query) return true;
-      const haystack = normalizeSearchText([product.title, product.description, product.tag, product.id].join(" "));
-      return haystack.includes(query);
+      return matchesProductSearch(product, query);
     });
 
   const sorted = filtered.slice();
@@ -1017,9 +1022,29 @@ function normalizeSearchText(value) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/[-_]+/g, " ")
+    .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function matchesProductSearch(product, query) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return true;
+
+  const haystack = normalizeSearchText(
+    [product?.title, product?.description, product?.tag, product?.id].filter(Boolean).join(" "),
+  );
+  if (!haystack) return false;
+
+  // Fast path for exact phrase match.
+  if (haystack.includes(normalizedQuery)) return true;
+
+  // Fallback: token-by-token match to support multi-word search in any order.
+  const tokens = normalizedQuery.split(" ").filter(Boolean);
+  if (!tokens.length) return true;
+
+  return tokens.every((token) => haystack.includes(token));
 }
 
 function updateSeoTags({ title, description, image, type = "website", price } = {}) {
