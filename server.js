@@ -17,11 +17,13 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const PORT = Number(process.env.PORT || 3000);
 const ROOT_DIR = __dirname;
 const DATA_DIR = path.join(ROOT_DIR, "data");
+const PRODUCT_IMAGES_DIR = path.join(ROOT_DIR, "images", "products");
 const COLLECTIONS_FILE = path.join(DATA_DIR, "collections.json");
 const SITE_FILE = path.join(DATA_DIR, "site.json");
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 const NEWSLETTER_FILE = path.join(DATA_DIR, "newsletter.json");
 const EVENTS_FILE = path.join(DATA_DIR, "events.json");
+const ADMIN_UPLOAD_MAX_BYTES = 8 * 1024 * 1024;
 
 const ADMIN_API_TOKEN = process.env.ADMIN_API_TOKEN || "change-this-admin-token";
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
@@ -204,7 +206,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
 });
 
 app.use("/api", apiLimiter);
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "12mb" }));
 
 app.get("/api/health", async (_req, res) => {
   res.json({
@@ -518,6 +520,29 @@ app.put("/api/admin/site", adminLimiter, requireAdmin, async (req, res) => {
   return res.json({ ok: true, site });
 });
 
+app.post("/api/admin/upload-image", adminLimiter, requireAdmin, async (req, res) => {
+  const dataUrl = String(req.body?.dataUrl || "");
+  const productId = sanitizeText(req.body?.productId, 80);
+  const sourceName = sanitizeText(req.body?.filename, 120);
+  const parsed = decodePngDataUrl(dataUrl);
+
+  if (!parsed.ok) {
+    return res.status(400).json({ error: parsed.error });
+  }
+
+  const safeBaseName = slugify(productId || sourceName || "produit") || "produit";
+  const stamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
+  const nonce = crypto.randomBytes(2).toString("hex");
+  const fileName = `${safeBaseName}-${stamp}-${nonce}.png`;
+  const relativePath = `images/products/${fileName}`;
+  const outputPath = path.join(PRODUCT_IMAGES_DIR, fileName);
+
+  await fs.mkdir(PRODUCT_IMAGES_DIR, { recursive: true });
+  await fs.writeFile(outputPath, parsed.buffer);
+
+  return res.json({ ok: true, image: relativePath });
+});
+
 app.use(
   express.static(ROOT_DIR, {
     extensions: ["html"],
@@ -719,6 +744,44 @@ function sanitizeText(value, maxLen = 120) {
     .replace(/[\u0000-\u001f\u007f]/g, "")
     .trim()
     .slice(0, maxLen);
+}
+
+function decodePngDataUrl(value) {
+  const dataUrl = String(value || "").trim();
+  const match = /^data:image\/png;base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
+  if (!match) {
+    return { ok: false, error: "Format invalide. Envoie un PNG." };
+  }
+
+  let buffer;
+  try {
+    buffer = Buffer.from(match[1], "base64");
+  } catch (_error) {
+    return { ok: false, error: "Image PNG illisible." };
+  }
+
+  if (!buffer || !buffer.length) {
+    return { ok: false, error: "Image vide." };
+  }
+
+  if (buffer.length > ADMIN_UPLOAD_MAX_BYTES) {
+    return { ok: false, error: "Image trop lourde (max 8MB)." };
+  }
+
+  if (!isPngBuffer(buffer)) {
+    return { ok: false, error: "Signature PNG invalide." };
+  }
+
+  return { ok: true, buffer };
+}
+
+function isPngBuffer(buffer) {
+  const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  if (!Buffer.isBuffer(buffer) || buffer.length < pngSignature.length) {
+    return false;
+  }
+
+  return pngSignature.every((byte, index) => buffer[index] === byte);
 }
 
 function sanitizeTrackProps(input) {

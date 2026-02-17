@@ -208,6 +208,20 @@ label span {
   resize: vertical;
 }
 
+.product-upload {
+  grid-column: 1 / -1;
+}
+
+.product-upload-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.product-upload input[type="file"] {
+  width: min(100%, 340px);
+}
+
 .product-tools {
   display: flex;
   justify-content: flex-end;

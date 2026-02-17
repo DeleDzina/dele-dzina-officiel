@@ -1,4 +1,9 @@
 const TOKEN_KEY = "dd_admin_token";
+const PRODUCT_UPLOAD_MAX_BYTES = 8 * 1024 * 1024;
+const PRODUCT_OUTPUT_MAX_SIDE = 1600;
+const PRODUCT_OUTPUT_MIN_SIDE = 640;
+const PRODUCT_FRAME_PADDING = 0.08;
+const ALPHA_THRESHOLD = 8;
 
 const state = {
   token: "",
@@ -119,9 +124,17 @@ function bindEvents() {
     renderSocialsEditor();
   });
 
-  el.productsEditor?.addEventListener("click", (event) => {
+  el.productsEditor?.addEventListener("click", async (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
+
+    const uploadBtn = target.closest("button[data-action='upload-product-image']");
+    if (uploadBtn instanceof HTMLButtonElement) {
+      const index = Number(uploadBtn.getAttribute("data-index"));
+      if (!Number.isInteger(index)) return;
+      await uploadProductImage(index, uploadBtn);
+      return;
+    }
 
     const removeBtn = target.closest("button[data-action='remove-product']");
     if (!removeBtn) return;
@@ -374,6 +387,21 @@ function renderProducts() {
             <span>Image (URL ou chemin)</span>
             <input data-field="image" value="${escapeAttr(product.image || "")}" />
           </label>
+          <label class="product-upload">
+            <span>Importer image (PNG transparent, auto recadrage + optimisation)</span>
+            <div class="product-upload-controls">
+              <input
+                type="file"
+                accept="image/png,.png"
+                data-field="image-file"
+                data-index="${index}"
+              />
+              <button type="button" class="ghost" data-action="upload-product-image" data-index="${index}">
+                Télécharger PNG
+              </button>
+            </div>
+            <small data-role="upload-status" class="status small"></small>
+          </label>
           <label>
             <span>Actif</span>
             <select data-field="active">
@@ -438,6 +466,77 @@ async function saveProducts() {
     showToast("Produits enregistrés.");
   } catch (error) {
     showToast(error.message || "Échec de sauvegarde produits.");
+  }
+}
+
+async function uploadProductImage(index, button) {
+  if (!state.token) {
+    setStatus("Connecte-toi d'abord.");
+    return;
+  }
+
+  const row = button.closest(".product-row");
+  if (!(row instanceof HTMLElement)) return;
+
+  const fileInput = row.querySelector("input[data-field='image-file']");
+  if (!(fileInput instanceof HTMLInputElement)) return;
+
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) {
+    setUploadStatus(row, "Choisis un fichier PNG.");
+    return;
+  }
+
+  const isPngType = String(file.type || "").toLowerCase() === "image/png";
+  const isPngName = /\.png$/i.test(file.name);
+  if (!isPngType && !isPngName) {
+    setUploadStatus(row, "Format refusé: PNG uniquement.");
+    return;
+  }
+
+  if (file.size > PRODUCT_UPLOAD_MAX_BYTES) {
+    setUploadStatus(row, "Image trop lourde (max 8MB).");
+    return;
+  }
+
+  button.disabled = true;
+  setUploadStatus(row, "Optimisation auto (recadrage + compression)...");
+
+  try {
+    const { dataUrl, outputWidth, outputHeight, byteSize } = await optimizeProductPng(file);
+    const productId = readRowField(row, "id") || readRowField(row, "title") || `produit-${index + 1}`;
+
+    const payload = await api("/api/admin/upload-image", {
+      method: "POST",
+      body: JSON.stringify({
+        filename: file.name,
+        productId,
+        dataUrl,
+      }),
+    });
+
+    const imagePath = String(payload.image || "").trim();
+    if (!imagePath) {
+      throw new Error("Chemin image manquant.");
+    }
+
+    const imageInput = row.querySelector("input[data-field='image']");
+    if (imageInput instanceof HTMLInputElement) {
+      imageInput.value = imagePath;
+    }
+
+    if (state.products[index]) {
+      state.products[index].image = imagePath;
+    }
+
+    fileInput.value = "";
+    const sizeKb = Math.round(byteSize / 1024);
+    setUploadStatus(row, `Image prête (${outputWidth}x${outputHeight}, ${sizeKb} KB): ${imagePath}`);
+    showToast("Image PNG uploadée. Clique Enregistrer pour publier.");
+  } catch (error) {
+    setUploadStatus(row, error.message || "Upload image impossible.");
+  } finally {
+    button.disabled = false;
   }
 }
 
@@ -531,6 +630,168 @@ function showToast(message) {
   setTimeout(() => {
     el.panelToast.classList.remove("show");
   }, 2400);
+}
+
+function setUploadStatus(row, message) {
+  if (!(row instanceof HTMLElement)) return;
+  const slot = row.querySelector("[data-role='upload-status']");
+  if (!(slot instanceof HTMLElement)) return;
+  slot.textContent = String(message || "");
+}
+
+function readRowField(row, field) {
+  if (!(row instanceof HTMLElement)) return "";
+  const input = row.querySelector(`[data-field='${field}']`);
+  if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement)) {
+    return "";
+  }
+  return String(input.value || "").trim();
+}
+
+async function optimizeProductPng(file) {
+  const image = await loadImageFromFile(file);
+  const sourceCanvas = document.createElement("canvas");
+  sourceCanvas.width = Math.max(1, Math.floor(image.naturalWidth || image.width || 1));
+  sourceCanvas.height = Math.max(1, Math.floor(image.naturalHeight || image.height || 1));
+
+  const sourceCtx = sourceCanvas.getContext("2d");
+  if (!sourceCtx) {
+    throw new Error("Canvas indisponible pour traiter l'image.");
+  }
+
+  sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+  sourceCtx.drawImage(image, 0, 0, sourceCanvas.width, sourceCanvas.height);
+
+  const bounds = detectOpaqueBounds(sourceCtx, sourceCanvas.width, sourceCanvas.height, ALPHA_THRESHOLD);
+  const crop = bounds || {
+    x: 0,
+    y: 0,
+    width: sourceCanvas.width,
+    height: sourceCanvas.height,
+  };
+
+  const baseSide = Math.max(crop.width, crop.height);
+  const outputSide = clampNumber(baseSide, PRODUCT_OUTPUT_MIN_SIDE, PRODUCT_OUTPUT_MAX_SIDE);
+  let outputCanvas = document.createElement("canvas");
+  outputCanvas.width = outputSide;
+  outputCanvas.height = outputSide;
+
+  let outputCtx = outputCanvas.getContext("2d");
+  if (!outputCtx) {
+    throw new Error("Canvas indisponible pour exporter l'image.");
+  }
+
+  outputCtx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+
+  const safeArea = outputSide * (1 - PRODUCT_FRAME_PADDING * 2);
+  const scale = Math.min(safeArea / crop.width, safeArea / crop.height);
+  const drawWidth = Math.max(1, Math.round(crop.width * scale));
+  const drawHeight = Math.max(1, Math.round(crop.height * scale));
+  const offsetX = Math.round((outputSide - drawWidth) / 2);
+  const offsetY = Math.round((outputSide - drawHeight) / 2);
+
+  outputCtx.drawImage(
+    sourceCanvas,
+    crop.x,
+    crop.y,
+    crop.width,
+    crop.height,
+    offsetX,
+    offsetY,
+    drawWidth,
+    drawHeight,
+  );
+
+  let dataUrl = outputCanvas.toDataURL("image/png");
+  let byteSize = estimateDataUrlBytes(dataUrl);
+
+  while (byteSize > PRODUCT_UPLOAD_MAX_BYTES && outputCanvas.width > PRODUCT_OUTPUT_MIN_SIDE) {
+    const nextSide = Math.max(PRODUCT_OUTPUT_MIN_SIDE, Math.floor(outputCanvas.width * 0.85));
+    const nextCanvas = document.createElement("canvas");
+    nextCanvas.width = nextSide;
+    nextCanvas.height = nextSide;
+
+    const nextCtx = nextCanvas.getContext("2d");
+    if (!nextCtx) break;
+
+    nextCtx.clearRect(0, 0, nextSide, nextSide);
+    nextCtx.drawImage(outputCanvas, 0, 0, outputCanvas.width, outputCanvas.height, 0, 0, nextSide, nextSide);
+
+    outputCanvas = nextCanvas;
+    dataUrl = outputCanvas.toDataURL("image/png");
+    byteSize = estimateDataUrlBytes(dataUrl);
+  }
+
+  if (byteSize > PRODUCT_UPLOAD_MAX_BYTES) {
+    throw new Error("Image trop lourde après optimisation. Choisis un PNG plus léger.");
+  }
+
+  return {
+    dataUrl,
+    outputWidth: outputCanvas.width,
+    outputHeight: outputCanvas.height,
+    byteSize,
+  };
+}
+
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(image);
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Lecture image impossible."));
+    };
+
+    image.src = objectUrl;
+  });
+}
+
+function detectOpaqueBounds(context, width, height, alphaThreshold = 1) {
+  const imageData = context.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const alphaIndex = (y * width + x) * 4 + 3;
+      if (pixels[alphaIndex] <= alphaThreshold) continue;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+  }
+
+  if (maxX < minX || maxY < minY) {
+    return null;
+  }
+
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX + 1,
+    height: maxY - minY + 1,
+  };
+}
+
+function estimateDataUrlBytes(dataUrl) {
+  const encoded = String(dataUrl || "").split(",")[1] || "";
+  const padding = encoded.endsWith("==") ? 2 : encoded.endsWith("=") ? 1 : 0;
+  return Math.max(0, Math.floor((encoded.length * 3) / 4) - padding);
+}
+
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, Number(value) || 0));
 }
 
 function formatCurrency(value) {
