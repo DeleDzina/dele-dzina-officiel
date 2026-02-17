@@ -72,16 +72,6 @@ const elements = {
   buyNowBtn: document.getElementById("buyNowBtn"),
 };
 
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on("init", (user) => {
-    if (!user) {
-      window.netlifyIdentity.on("login", () => {
-        document.location.href = "/admin/";
-      });
-    }
-  });
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
   state.cart = readCart();
   setupStaticUI();

@@ -27,6 +27,9 @@ const ADMIN_UPLOAD_MAX_BYTES = 8 * 1024 * 1024;
 
 const ADMIN_API_TOKEN = process.env.ADMIN_API_TOKEN || "change-this-admin-token";
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
+const RESEND_API_KEY = String(process.env.RESEND_API_KEY || "").trim();
+const ORDER_FROM_EMAIL = String(process.env.ORDER_FROM_EMAIL || "").trim();
+const SUPPORT_EMAIL = String(process.env.SUPPORT_EMAIL || "deledzina@gmail.com").trim();
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
@@ -94,8 +97,6 @@ const adminLimiter = rateLimit({
 const sharedScriptSrc = [
   "'self'",
   "'unsafe-inline'",
-  "https://identity.netlify.com",
-  "https://cdn.jsdelivr.net",
   "https://www.googletagmanager.com",
   "https://www.google-analytics.com",
 ];
@@ -109,10 +110,8 @@ const sharedCspDirectives = {
     "'self'",
     "https://www.google-analytics.com",
     "https://region1.google-analytics.com",
-    "https://identity.netlify.com",
-    "https://api.netlify.com",
   ],
-  frameSrc: ["https://js.stripe.com", "https://hooks.stripe.com", "https://*.netlify.com"],
+  frameSrc: ["https://js.stripe.com", "https://hooks.stripe.com"],
   formAction: ["'self'", "https://checkout.stripe.com"],
 };
 
@@ -127,25 +126,7 @@ if (IS_PRODUCTION) {
     crossOriginResourcePolicy: { policy: "cross-origin" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
   });
-
-  const adminHelmet = helmet({
-    contentSecurityPolicy: {
-      directives: {
-        ...sharedCspDirectives,
-        // Decap CMS requires eval on /admin only.
-        scriptSrc: [...sharedScriptSrc, "'unsafe-eval'"],
-      },
-    },
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-  });
-
-  app.use((req, res, next) => {
-    if (req.path.startsWith("/admin")) {
-      return adminHelmet(req, res, next);
-    }
-    return defaultHelmet(req, res, next);
-  });
+  app.use(defaultHelmet);
 } else {
   app.use(
     helmet({
@@ -177,9 +158,12 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
 
     if (orderId) {
       const ordersDoc = await readJson(ORDERS_FILE, { orders: [] });
+      let paidOrder = null;
+      let previousStatus = "";
       const nextOrders = (ordersDoc.orders || []).map((order) => {
         if (order.id !== orderId) return order;
-        return {
+        previousStatus = String(order.status || "");
+        paidOrder = {
           ...order,
           status: "paid",
           stripePaymentIntentId: session.payment_intent || "",
@@ -187,6 +171,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
           paidAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
+        return paidOrder;
       });
       await writeJson(ORDERS_FILE, { orders: nextOrders });
 
@@ -199,6 +184,14 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
           source: "stripe_webhook",
         },
       });
+
+      if (paidOrder && previousStatus !== "paid" && isValidEmail(paidOrder.customerEmail)) {
+        await sendOrderStatusEmail({
+          order: paidOrder,
+          status: "paid",
+          baseUrl: resolveBaseUrl(req),
+        });
+      }
     }
   }
 
@@ -477,15 +470,19 @@ app.patch("/api/admin/orders/:orderId", adminLimiter, requireAdmin, async (req, 
   const orders = Array.isArray(ordersDoc.orders) ? ordersDoc.orders : [];
 
   let found = false;
+  let previousStatus = "";
+  let updatedOrder = null;
   const nextOrders = orders.map((order) => {
     if (order.id !== orderId) return order;
     found = true;
-    return {
+    previousStatus = String(order.status || "");
+    updatedOrder = {
       ...order,
       status: status || order.status,
       note: sanitizeText(note, 280),
       updatedAt: new Date().toISOString(),
     };
+    return updatedOrder;
   });
 
   if (!found) {
@@ -493,6 +490,20 @@ app.patch("/api/admin/orders/:orderId", adminLimiter, requireAdmin, async (req, 
   }
 
   await writeJson(ORDERS_FILE, { orders: nextOrders });
+
+  if (
+    updatedOrder &&
+    updatedOrder.status !== previousStatus &&
+    shouldNotifyOrderStatus(updatedOrder.status) &&
+    isValidEmail(updatedOrder.customerEmail)
+  ) {
+    await sendOrderStatusEmail({
+      order: updatedOrder,
+      status: updatedOrder.status,
+      baseUrl: resolveBaseUrl(req),
+    });
+  }
+
   return res.json({ ok: true });
 });
 
@@ -744,6 +755,117 @@ function sanitizeText(value, maxLen = 120) {
     .replace(/[\u0000-\u001f\u007f]/g, "")
     .trim()
     .slice(0, maxLen);
+}
+
+function shouldNotifyOrderStatus(status) {
+  return new Set(["paid", "processing", "shipped", "delivered", "cancelled"]).has(String(status || ""));
+}
+
+function formatOrderStatusLabel(status) {
+  const value = String(status || "");
+  if (value === "paid") return "Paiement confirmé";
+  if (value === "processing") return "Commande en préparation";
+  if (value === "shipped") return "Commande expédiée";
+  if (value === "delivered") return "Commande livrée";
+  if (value === "cancelled") return "Commande annulée";
+  return "Mise à jour commande";
+}
+
+function formatOrderTotal(order) {
+  const amount = Number(order?.subtotal || 0);
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount);
+}
+
+function escapeHtmlMinimal(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function buildOrderItemsHtml(order) {
+  const items = Array.isArray(order?.items) ? order.items.slice(0, 6) : [];
+  if (!items.length) return "";
+  const list = items
+    .map((item) => {
+      const title = escapeHtmlMinimal(item?.title || "Produit");
+      const qty = Number(item?.quantity || 0);
+      return `<li style="margin-bottom:6px;">${title} x ${qty}</li>`;
+    })
+    .join("");
+  return `<ul style="margin:0;padding-left:20px;color:#d0c9b8;">${list}</ul>`;
+}
+
+async function sendOrderStatusEmail({ order, status, baseUrl }) {
+  if (!order || !isValidEmail(order.customerEmail)) return;
+  if (!RESEND_API_KEY || !ORDER_FROM_EMAIL) return;
+
+  const label = formatOrderStatusLabel(status);
+  const orderId = sanitizeText(order.id, 80);
+  const supportEmail = isValidEmail(SUPPORT_EMAIL) ? SUPPORT_EMAIL : "deledzina@gmail.com";
+  const total = formatOrderTotal(order);
+  const orderLink = `${String(baseUrl || "").replace(/\/+$/, "")}/checkout-success.html?order_id=${encodeURIComponent(orderId)}`;
+
+  const subject = `Délé Dzina - ${label} (${orderId})`;
+  const html = `
+    <div style="font-family:Arial,sans-serif;background:#0b0b0b;color:#f2eee2;padding:24px;">
+      <div style="max-width:560px;margin:0 auto;border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px;background:#121212;">
+        <h2 style="margin:0 0 12px 0;">${escapeHtmlMinimal(label)}</h2>
+        <p style="margin:0 0 12px 0;color:#d0c9b8;">Référence: <strong>${escapeHtmlMinimal(orderId)}</strong></p>
+        <p style="margin:0 0 12px 0;color:#d0c9b8;">Montant: <strong>${escapeHtmlMinimal(total)}</strong></p>
+        ${buildOrderItemsHtml(order)}
+        <p style="margin:16px 0 12px 0;color:#d0c9b8;">Tu peux revoir ta commande ici:</p>
+        <p style="margin:0 0 14px 0;">
+          <a href="${escapeHtmlMinimal(orderLink)}" style="color:#d6b15d;text-decoration:none;">${escapeHtmlMinimal(orderLink)}</a>
+        </p>
+        <p style="margin:0;color:#d0c9b8;">Support: <a href="mailto:${escapeHtmlMinimal(
+          supportEmail,
+        )}" style="color:#d6b15d;text-decoration:none;">${escapeHtmlMinimal(supportEmail)}</a></p>
+      </div>
+    </div>
+  `;
+
+  const text = `${label}\nRéférence: ${orderId}\nMontant: ${total}\nSuivi: ${orderLink}\nSupport: ${supportEmail}`;
+  await sendEmailViaResend({
+    to: order.customerEmail,
+    subject,
+    html,
+    text,
+  });
+}
+
+async function sendEmailViaResend({ to, subject, html, text }) {
+  if (!RESEND_API_KEY || !ORDER_FROM_EMAIL) return;
+  if (!isValidEmail(to)) return;
+
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: ORDER_FROM_EMAIL,
+        to: [to],
+        subject: sanitizeText(subject, 180),
+        html: String(html || ""),
+        text: String(text || ""),
+      }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      console.error("Resend email error:", response.status, body);
+    }
+  } catch (error) {
+    console.error("Resend email exception:", error.message);
+  }
 }
 
 function decodePngDataUrl(value) {

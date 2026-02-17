@@ -1264,6 +1264,18 @@ section {
   line-height: 1.7;
 }
 
+.status-card.legal h2 {
+  margin-top: 8px;
+  font-size: 1.1rem;
+}
+
+.status-card.legal ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .footer-links {
   margin-top: 10px;
   display: inline-flex;

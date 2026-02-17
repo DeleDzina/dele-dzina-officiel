@@ -5,7 +5,7 @@
 - Frontend: HTML/CSS/JS (no framework)
 - Backend: Node.js + Express
 - Paiement carte: Stripe Checkout + webhook
-- Admin: panel custom (`/admin/panel.html`) + Decap CMS (`/admin/`)
+- Admin: panel custom Render (`/admin/panel.html`)
 
 ## Fonctionnalités livrées
 
@@ -15,8 +15,12 @@
 - Confirmation et annulation checkout (`checkout-success.html`, `checkout-cancel.html`)
 - Gestion commandes (statuts) dans admin panel
 - Gestion produits dans admin panel
+- Upload image produit PNG dans admin panel (recadrage + optimisation auto)
+- Gestion contenu homepage/contact/trust dans admin panel
+- Emails transactionnels commande (optionnel via Resend)
 - Inscription newsletter (`/api/newsletter`)
 - Tracking conversion (`/api/track`) + option GA4 (`ga_measurement_id` dans `data/site.json`)
+- Pages légales prêtes: mentions légales, confidentialité, CGV, livraison & retours
 - SEO de base: OpenGraph/Twitter tags, canonical, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`
 - Hardening backend: `helmet`, `compression`, `rate-limit`, cache headers statiques
 
@@ -41,6 +45,9 @@ BASE_URL=http://localhost:3000
 STRIPE_SECRET_KEY=sk_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 ADMIN_API_TOKEN=change-this-admin-token
+RESEND_API_KEY=
+ORDER_FROM_EMAIL=shop@deledzina.com
+SUPPORT_EMAIL=deledzina@gmail.com
 ```
 
 ## Lancer en local
@@ -51,7 +58,6 @@ npm run dev
 
 - Site: `http://localhost:3000`
 - Admin panel: `http://localhost:3000/admin/panel.html`
-- Decap CMS: `http://localhost:3000/admin/`
 
 ## Webhook Stripe (local)
 
@@ -75,6 +81,8 @@ Copier le `whsec_...` retourné dans `STRIPE_WEBHOOK_SECRET`.
 - `GET /api/admin/orders` (header `x-admin-token`)
 - `PATCH /api/admin/orders/:orderId` (header `x-admin-token`)
 - `PUT /api/admin/products` (header `x-admin-token`)
+- `POST /api/admin/upload-image` (header `x-admin-token`, PNG)
+- `PUT /api/admin/site` (header `x-admin-token`)
 
 ## Tracking conversion
 
@@ -96,6 +104,18 @@ Les événements sont stockés dans `data/events.json`.
 
 Dans `data/site.json`, renseigner `ga_measurement_id` (ex: `G-XXXXXXXXXX`).
 Le frontend charge automatiquement `gtag` et envoie les événements e-commerce.
+
+## Emails transactionnels (optionnel)
+
+Variables requises:
+
+- `RESEND_API_KEY`
+- `ORDER_FROM_EMAIL` (adresse expéditeur validée dans Resend)
+
+Emails envoyés:
+
+- Paiement confirmé (`checkout.session.completed`)
+- Mises à jour statut commande côté admin (`processing`, `shipped`, `delivered`, `cancelled`)
 
 ## Déploiement production
 
