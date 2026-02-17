@@ -529,6 +529,12 @@ app.use(
         return;
       }
 
+      // Admin assets should never be cached aggressively to avoid stale panel JS/CSS after deploys.
+      if (filePath.includes(`${path.sep}admin${path.sep}`)) {
+        res.setHeader("Cache-Control", "no-cache");
+        return;
+      }
+
       if (filePath.endsWith(".html")) {
         res.setHeader("Cache-Control", "no-cache");
         return;
